@@ -1,0 +1,2257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1e40af">
+    <meta name="description" content="Plano de Leitura Bíblica 365 - Leia a Bíblia em um ano">
+    <title>Bíblia 365 - Plano de Leitura</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&family=Merriweather:wght@300;400;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #1e40af;
+            --primary-dark: #1e3a8a;
+            --secondary: #14b8a6;
+            --accent: #f59e0b;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --success: #10b981;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --reader-bg: #ffffff;
+            --reader-text: #1e293b;
+            --reader-font: 'Merriweather', serif;
+            --reader-size: 18px;
+            --reader-line-height: 1.8;
+            --reader-spacing: 1.8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+
+        .install-prompt {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            padding: 1rem;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            z-index: 1000;
+            border-top: 3px solid var(--primary);
+        }
+        .install-prompt.show { display: block; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .nav-menu a:hover, .nav-menu a.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .version-selector {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            outline: none;
+        }
+
+        .version-selector option {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 3rem 0;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            margin-bottom: 2rem;
+            border-radius: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.3;
+        }
+
+        .hero-content { position: relative; z-index: 1; }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .progress-overview {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-number { font-size: 2.5rem; font-weight: 700; display: block; }
+        .stat-label { font-size: 0.875rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard { grid-template-columns: 1fr; }
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--primary-dark);
+                flex-direction: column;
+                padding: 1rem;
+            }
+            .nav-menu.active { display: flex; }
+            .mobile-menu-btn { display: block; }
+            .hero h1 { font-size: 2rem; }
+            .reading-item { flex-direction: column; text-align: center; gap: 1rem; }
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title i { color: var(--primary); }
+
+        .streak-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .streak-icon { font-size: 2rem; }
+        .streak-count { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+        .streak-label { font-size: 0.875rem; color: var(--text-light); }
+
+        .reading-item {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .reading-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        }
+
+        .reading-item.completed {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-left-color: var(--success);
+            opacity: 0.8;
+        }
+
+        .reading-info h3 { font-size: 1.1rem; margin-bottom: 0.25rem; color: var(--text); }
+        .reading-info p { color: var(--text-light); font-size: 0.875rem; }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover { background: var(--primary); color: white; }
+
+        .btn-icon {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-icon:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .progress-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .progress-circle { position: relative; width: 200px; height: 200px; }
+        .progress-circle svg { transform: rotate(-90deg); }
+        .progress-circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 12; }
+        .progress-circle-fill {
+            fill: none;
+            stroke: url(#gradient);
+            stroke-width: 12;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s ease-in-out;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .progress-percentage { font-size: 2.5rem; font-weight: 700; color: var(--primary); line-height: 1; }
+        .progress-label { font-size: 0.875rem; color: var(--text-light); margin-top: 0.25rem; }
+
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .plan-card {
+            background: var(--card);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .plan-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .plan-card:hover::before, .plan-card.active::before { transform: scaleX(1); }
+        .plan-card:hover, .plan-card.active {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        .plan-card.active { background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%); }
+
+        .plan-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .plan-title { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .plan-description { color: var(--text-light); font-size: 0.875rem; margin-bottom: 1rem; }
+        .plan-meta { display: flex; gap: 1rem; font-size: 0.75rem; color: var(--text-light); }
+        .plan-meta span { display: flex; align-items: center; gap: 0.25rem; }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .calendar-nav { display: flex; gap: 0.5rem; }
+
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            padding: 0.5rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            background: #f1f5f9;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            font-size: 0.875rem;
+        }
+
+        .calendar-day:hover { background: #e2e8f0; transform: scale(1.05); }
+        .calendar-day.today { background: var(--primary); color: white; font-weight: 600; }
+        .calendar-day.completed { background: #dcfce7; color: var(--success); }
+        .calendar-day.completed::after {
+            content: '✓';
+            position: absolute;
+            bottom: 2px;
+            font-size: 0.625rem;
+        }
+        .calendar-day.pending { background: #fef3c7; color: var(--accent); }
+
+        .books-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .testament-section h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .books-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+        .book-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .book-item:hover {
+            background: #f0f9ff;
+            border-left-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .book-name { font-weight: 500; }
+        .book-progress { font-size: 0.75rem; color: var(--text-light); background: white; padding: 0.25rem 0.5rem; border-radius: 1rem; }
+
+        .reader-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--reader-bg);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .reader-modal.active { display: block; animation: fadeIn 0.3s ease; }
+
+        .reader-header {
+            position: sticky;
+            top: 0;
+            background: var(--reader-bg);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.75rem 1rem;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            max-width: 100%;
+        }
+
+        .reader-title { 
+            font-family: 'Playfair Display', serif; 
+            font-size: 1rem; 
+            color: var(--reader-text); 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            max-width: 120px;
+            flex-shrink: 1;
+        }
+
+        .reader-controls { 
+            display: flex; 
+            gap: 0.3rem; 
+            align-items: center; 
+            flex-wrap: nowrap;
+            flex-shrink: 0;
+        }
+
+        .reader-btn {
+            padding: 0.4rem 0.5rem;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 0.4rem;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.3s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .reader-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .reader-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1.5rem 1rem;
+            font-family: var(--reader-font);
+            font-size: var(--reader-size);
+            line-height: var(--reader-line-height);
+            color: var(--reader-text);
+            background: var(--reader-bg);
+            min-height: 100vh;
+            touch-action: pan-y;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        .chapter-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--reader-text);
+        }
+
+        .verse {
+            margin-bottom: 0.4rem;
+            text-align: justify;
+            position: relative;
+            padding-left: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .verse-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 0.65em;
+            color: var(--primary);
+            font-weight: 600;
+            opacity: 0.7;
+            line-height: 1.6;
+        }
+
+        .verse-text { display: inline; }
+
+        .highlight-yellow { background-color: #fef3c7; padding: 0.1rem 0.2rem; border-radius: 2px; }
+        .highlight-green { background-color: #d1fae5; padding: 0.1rem 0.2rem; border-radius: 2px; }
+        .highlight-blue { background-color: #dbeafe; padding: 0.1rem 0.2rem; border-radius: 2px; }
+        .highlight-pink { background-color: #fce7f3; padding: 0.1rem 0.2rem; border-radius: 2px; }
+        .highlight-orange { background-color: #ffedd5; padding: 0.1rem 0.2rem; border-radius: 2px; }
+        .highlight-purple { background-color: #f3e8ff; padding: 0.1rem 0.2rem; border-radius: 2px; }
+
+        .highlight-panel {
+            display: none;
+            position: absolute;
+            background: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            z-index: 3001;
+            gap: 0.4rem;
+            align-items: center;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 8px;
+        }
+        
+        .highlight-panel::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid white;
+        }
+        
+        .highlight-panel::before {
+            content: '';
+            position: absolute;
+            bottom: -7px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-top: 7px solid #e2e8f0;
+        }
+
+        .highlight-panel.active { display: flex; animation: slideUp 0.3s ease; }
+
+        .highlight-color-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: rgba(0,0,0,0.5);
+        }
+
+        .highlight-color-btn:hover { transform: scale(1.1); border-color: var(--primary); }
+        .highlight-color-btn.active { border-color: var(--primary); transform: scale(1.15); }
+
+        .highlight-yellow-btn { background: #fef3c7; }
+        .highlight-green-btn { background: #d1fae5; }
+        .highlight-blue-btn { background: #dbeafe; }
+        .highlight-pink-btn { background: #fce7f3; }
+        .highlight-orange-btn { background: #ffedd5; }
+        .highlight-purple-btn { background: #f3e8ff; }
+
+        .highlight-close-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: #f1f5f9;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 0.5rem;
+            color: var(--text-light);
+        }
+
+        .highlight-close-btn:hover { background: #e2e8f0; }
+
+        .swipe-indicator {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(30, 64, 175, 0.8);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 2001;
+            pointer-events: none;
+        }
+
+        .swipe-indicator.show { opacity: 1; }
+        .swipe-indicator.left { left: 20px; }
+        .swipe-indicator.right { right: 20px; }
+
+        .settings-panel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            z-index: 3000;
+            width: 90%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .settings-panel.active { display: block; animation: modalSlide 0.3s ease; }
+
+        .settings-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2999;
+        }
+
+        .settings-overlay.active { display: block; }
+
+        .setting-group { margin-bottom: 1.5rem; }
+        .setting-label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text); }
+        .setting-options { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .color-option:hover, .color-option.active { border-color: var(--primary); transform: scale(1.1); }
+
+        .font-option {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .font-option:hover, .font-option.active { border-color: var(--primary); background: #f0f9ff; }
+
+        .size-slider { width: 100%; margin-top: 0.5rem; }
+
+        .spacing-options {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .spacing-option {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            background: white;
+            transition: all 0.3s;
+            font-size: 0.875rem;
+        }
+
+        .spacing-option:hover, .spacing-option.active {
+            border-color: var(--primary);
+            background: #f0f9ff;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            color: var(--text-light);
+        }
+
+        .loading i { font-size: 2rem; animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .reader-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes modalSlide {
+            from { opacity: 0; transform: translate(-50%, -60%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.5s ease; }
+
+        .chapter-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2500;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .chapter-modal.active { display: flex; animation: fadeIn 0.3s ease; }
+
+        .chapter-modal-content {
+            background: white;
+            border-radius: 1rem;
+            width: 100%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .chapter-modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-radius: 1rem 1rem 0 0;
+        }
+
+        .chapter-modal-title { font-family: 'Playfair Display', serif; font-size: 1.25rem; }
+
+        .chapter-modal-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .chapter-modal-close:hover { background: rgba(255,255,255,0.3); }
+
+        .chapter-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        @media (max-width: 480px) {
+            .chapter-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .chapter-btn {
+            aspect-ratio: 1;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chapter-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .chapter-btn:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+    <div class="install-prompt" id="installPrompt">
+        <div class="install-content" style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
+            <div>
+                <strong>Instalar Bíblia 365</strong>
+                <p style="font-size: 0.875rem; color: var(--text-light); margin: 0;">Adicione à tela inicial para acesso offline</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-outline" onclick="dismissInstall()">Agora não</button>
+                <button class="btn btn-primary" onclick="installApp()">Instalar</button>
+            </div>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-book-bible"></i>
+                <span>Bíblia 365</span>
+            </div>
+            <select class="version-selector" id="versionSelector" onchange="changeVersion()">
+                <option value="ACF">ACF</option>
+                <option value="ARA">ARA</option>
+                <option value="ARC">ARC</option>
+                <option value="KJF">KJF</option>
+                <option value="NVI">NVI</option>
+                <option value="NAA">NAA</option>
+            </select>
+            <button class="mobile-menu-btn" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#" class="active" onclick="showSection('dashboard')">Início</a></li>
+                <li><a href="#" onclick="showSection('plans')">Planos</a></li>
+                <li><a href="#" onclick="showSection('calendar')">Calendário</a></li>
+                <li><a href="#" onclick="showSection('books')">Bíblia</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="container">
+        <section id="dashboard" class="section active">
+            <div class="hero">
+                <div class="hero-content">
+                    <h1>Plano de Leitura Bíblica</h1>
+                    <p>Sua jornada espiritual começa aqui. Leia a Bíblia em um ano.</p>
+                    <div class="progress-overview">
+                        <div class="stat-card">
+                            <span class="stat-number" id="daysCompleted">0</span>
+                            <span class="stat-label">Dias Completados</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" id="chaptersRead">0</span>
+                            <span class="stat-label">Capítulos Lidos</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" id="currentStreak">0</span>
+                            <span class="stat-label">Dias Consecutivos</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard">
+                <div class="card">
+                    <div class="streak-container">
+                        <div class="streak-icon">🔥</div>
+                        <div class="streak-text">
+                            <div class="streak-count" id="streakDisplay">0 dias</div>
+                            <div class="streak-label">Sequência atual</div>
+                        </div>
+                    </div>
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fas fa-sun"></i> Leitura de Hoje</h2>
+                        <span id="currentDate"></span>
+                    </div>
+                    <div id="todaysReading"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fas fa-chart-pie"></i> Progresso</h2>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-circle">
+                            <svg width="200" height="200">
+                                <defs>
+                                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#1e40af"/>
+                                        <stop offset="100%" style="stop-color:#14b8a6"/>
+                                    </linearGradient>
+                                </defs>
+                                <circle class="progress-circle-bg" cx="100" cy="100" r="88"/>
+                                <circle class="progress-circle-fill" cx="100" cy="100" r="88" 
+                                    stroke-dasharray="553" stroke-dashoffset="553" id="progressCircle"/>
+                            </svg>
+                            <div class="progress-text">
+                                <div class="progress-percentage" id="progressPercent">0%</div>
+                                <div class="progress-label">Completado</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline" onclick="showSection('plans')">
+                            <i class="fas fa-exchange-alt"></i> Mudar Plano
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="plans" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-map"></i> Escolha seu Plano</h2>
+                </div>
+                <p style="color: var(--text-light); margin-bottom: 1rem;">Selecione o plano que melhor se adapta à sua rotina.</p>
+                <div class="plans-grid">
+                    <div class="plan-card active" onclick="selectPlan('canonical')">
+                        <div class="plan-icon"><i class="fas fa-book-open"></i></div>
+                        <h3 class="plan-title">Ordem Canônica</h3>
+                        <p class="plan-description">Leia na ordem tradicional dos livros, do Gênesis ao Apocalipse.</p>
+                        <div class="plan-meta">
+                            <span><i class="fas fa-calendar"></i> 365 dias</span>
+                            <span><i class="fas fa-book"></i> 66 livros</span>
+                        </div>
+                    </div>
+                    <div class="plan-card" onclick="selectPlan('chronological')">
+                        <div class="plan-icon" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <h3 class="plan-title">Ordem Cronológica</h3>
+                        <p class="plan-description">Eventos bíblicos na ordem histórica em que aconteceram.</p>
+                        <div class="plan-meta">
+                            <span><i class="fas fa-calendar"></i> 365 dias</span>
+                            <span><i class="fas fa-book"></i> 66 livros</span>
+                        </div>
+                    </div>
+                    <div class="plan-card" onclick="selectPlan('new-testament')">
+                        <div class="plan-icon" style="background: linear-gradient(135deg, #10b981, #3b82f6);">
+                            <i class="fas fa-cross"></i>
+                        </div>
+                        <h3 class="plan-title">Novo Testamento</h3>
+                        <p class="plan-description">Foque apenas no Novo Testamento (27 livros).</p>
+                        <div class="plan-meta">
+                            <span><i class="fas fa-calendar"></i> 180 dias</span>
+                            <span><i class="fas fa-book"></i> 27 livros</span>
+                        </div>
+                    </div>
+                    <div class="plan-card" onclick="selectPlan('gospels')">
+                        <div class="plan-icon" style="background: linear-gradient(135deg, #8b5cf6, #ec4899);">
+                            <i class="fas fa-dove"></i>
+                        </div>
+                        <h3 class="plan-title">Evangelhos</h3>
+                        <p class="plan-description">Aprofunde-se nos quatro evangelhos.</p>
+                        <div class="plan-meta">
+                            <span><i class="fas fa-calendar"></i> 90 dias</span>
+                            <span><i class="fas fa-book"></i> 4 livros</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="calendar" class="section">
+            <div class="card">
+                <div class="calendar-header">
+                    <h2 class="card-title"><i class="fas fa-calendar-alt"></i> Calendário</h2>
+                    <div class="calendar-nav">
+                        <button class="btn-icon" onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+                        <span id="calendarMonth" style="font-weight: 600; min-width: 150px; text-align: center;"></span>
+                        <button class="btn-icon" onclick="changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
+                <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <span style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem;">
+                        <span style="width: 12px; height: 12px; background: var(--primary); border-radius: 50%;"></span> Hoje
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem;">
+                        <span style="width: 12px; height: 12px; background: #dcfce7; border-radius: 50%;"></span> Completado
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem;">
+                        <span style="width: 12px; height: 12px; background: #fef3c7; border-radius: 50%;"></span> Pendente
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section id="books" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-list"></i> Livros da Bíblia</h2>
+                </div>
+                <div class="books-container">
+                    <div class="testament-section">
+                        <h3><i class="fas fa-star-of-david"></i> Antigo Testamento</h3>
+                        <div class="books-list" id="oldTestament"></div>
+                    </div>
+                    <div class="testament-section">
+                        <h3><i class="fas fa-cross"></i> Novo Testamento</h3>
+                        <div class="books-list" id="newTestament"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="reader-modal" id="readerModal">
+        <div class="reader-header">
+            <button class="reader-btn" onclick="closeReader()"><i class="fas fa-arrow-left"></i> Voltar</button>
+            <h2 class="reader-title" id="readerTitle">Gênesis 1</h2>
+            <div class="reader-controls">
+                <select class="version-selector" id="readerVersionSelector" onchange="changeVersionFromReader()" style="background: white; color: var(--text); border: 1px solid #e2e8f0; padding: 0.35rem 0.4rem; font-size: 0.75rem; border-radius: 0.4rem; width: auto; min-width: 55px;">
+                    <option value="ACF">ACF</option>
+                    <option value="ARA">ARA</option>
+                    <option value="ARC">ARC</option>
+                    <option value="KJF">KJF</option>
+                    <option value="NVI">NVI</option>
+                    <option value="NAA">NAA</option>
+                </select>
+                <button class="reader-btn" onclick="openSettings()"><i class="fas fa-cog"></i></button>
+                <button class="reader-btn" onclick="previousChapter()"><i class="fas fa-chevron-left"></i></button>
+                <button class="reader-btn" onclick="nextChapter()"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+        <div class="reader-content" id="readerContent">
+            <div class="loading"><i class="fas fa-spinner"></i></div>
+        </div>
+    </div>
+
+    <div class="swipe-indicator left" id="swipeLeftIndicator">
+        <i class="fas fa-chevron-left"></i>
+    </div>
+    <div class="swipe-indicator right" id="swipeRightIndicator">
+        <i class="fas fa-chevron-right"></i>
+    </div>
+
+    <div class="highlight-panel" id="highlightPanel">
+        <button class="highlight-color-btn highlight-yellow-btn" onclick="applyHighlight('yellow')" title="Amarelo"></button>
+        <button class="highlight-color-btn highlight-green-btn" onclick="applyHighlight('green')" title="Verde"></button>
+        <button class="highlight-color-btn highlight-blue-btn" onclick="applyHighlight('blue')" title="Azul"></button>
+        <button class="highlight-color-btn highlight-pink-btn" onclick="applyHighlight('pink')" title="Rosa"></button>
+        <button class="highlight-color-btn highlight-orange-btn" onclick="applyHighlight('orange')" title="Laranja"></button>
+        <button class="highlight-color-btn highlight-purple-btn" onclick="applyHighlight('purple')" title="Roxo"></button>
+        <button class="highlight-close-btn" onclick="closeHighlightPanel()" title="Fechar">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <div class="settings-overlay" id="settingsOverlay" onclick="closeSettings()"></div>
+    <div class="settings-panel" id="settingsPanel">
+        <h3 style="margin-bottom: 1.5rem; font-family: 'Playfair Display', serif;">Configurações</h3>
+        <div class="setting-group">
+            <label class="setting-label">Cor de fundo</label>
+            <div class="setting-options">
+                <div class="color-option active" style="background: #ffffff;" data-bg="#ffffff" data-text="#1e293b" onclick="changeTheme(this)"></div>
+                <div class="color-option" style="background: #f5f5dc;" data-bg="#f5f5dc" data-text="#2c241b" onclick="changeTheme(this)"></div>
+                <div class="color-option" style="background: #2d3748;" data-bg="#2d3748" data-text="#e2e8f0" onclick="changeTheme(this)"></div>
+                <div class="color-option" style="background: #1a202c;" data-bg="#1a202c" data-text="#a0aec0" onclick="changeTheme(this)"></div>
+            </div>
+        </div>
+        <div class="setting-group">
+            <label class="setting-label">Fonte</label>
+            <div class="setting-options">
+                <div class="font-option active" data-font="'Merriweather', serif" onclick="changeFont(this)">Merriweather</div>
+                <div class="font-option" data-font="'Inter', sans-serif" onclick="changeFont(this)">Inter</div>
+                <div class="font-option" data-font="'Georgia', serif" onclick="changeFont(this)">Georgia</div>
+                <div class="font-option" data-font="'Roboto Mono', monospace" onclick="changeFont(this)">Mono</div>
+            </div>
+        </div>
+        <div class="setting-group">
+            <label class="setting-label">Tamanho: <span id="fontSizeValue">18px</span></label>
+            <input type="range" class="size-slider" min="12" max="32" value="18" id="fontSizeSlider" oninput="changeFontSize(this.value)">
+        </div>
+        <div class="setting-group">
+            <label class="setting-label">Espaçamento entre linhas</label>
+            <div class="spacing-options">
+                <div class="spacing-option" data-spacing="1.4" onclick="changeSpacing(this)">Compacto</div>
+                <div class="spacing-option active" data-spacing="1.8" onclick="changeSpacing(this)">Normal</div>
+                <div class="spacing-option" data-spacing="2.2" onclick="changeSpacing(this)">Amplo</div>
+                <div class="spacing-option" data-spacing="2.6" onclick="changeSpacing(this)">Muito Amplo</div>
+            </div>
+        </div>
+        <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="closeSettings()">Concluído</button>
+    </div>
+
+    <div class="chapter-modal" id="chapterModal">
+        <div class="chapter-modal-content">
+            <div class="chapter-modal-header">
+                <h3 class="chapter-modal-title" id="chapterModalTitle">Selecione o Capítulo</h3>
+                <button class="chapter-modal-close" onclick="closeChapterModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="chapter-grid" id="chapterGrid"></div>
+        </div>
+    </div>
+  <script>
+        const bibleBooks = {
+            oldTestament: [
+                { name: 'Gênesis', chapters: 50, abbr: 'Gn', index: 0 },
+                { name: 'Êxodo', chapters: 40, abbr: 'Ex', index: 1 },
+                { name: 'Levítico', chapters: 27, abbr: 'Lv', index: 2 },
+                { name: 'Números', chapters: 36, abbr: 'Nm', index: 3 },
+                { name: 'Deuteronômio', chapters: 34, abbr: 'Dt', index: 4 },
+                { name: 'Josué', chapters: 24, abbr: 'Js', index: 5 },
+                { name: 'Juízes', chapters: 21, abbr: 'Jz', index: 6 },
+                { name: 'Rute', chapters: 4, abbr: 'Rt', index: 7 },
+                { name: '1 Samuel', chapters: 31, abbr: '1Sm', index: 8 },
+                { name: '2 Samuel', chapters: 24, abbr: '2Sm', index: 9 },
+                { name: '1 Reis', chapters: 22, abbr: '1Rs', index: 10 },
+                { name: '2 Reis', chapters: 25, abbr: '2Rs', index: 11 },
+                { name: '1 Crônicas', chapters: 29, abbr: '1Cr', index: 12 },
+                { name: '2 Crônicas', chapters: 36, abbr: '2Cr', index: 13 },
+                { name: 'Esdras', chapters: 10, abbr: 'Ed', index: 14 },
+                { name: 'Neemias', chapters: 13, abbr: 'Ne', index: 15 },
+                { name: 'Ester', chapters: 10, abbr: 'Et', index: 16 },
+                { name: 'Jó', chapters: 42, abbr: 'Jó', index: 17 },
+                { name: 'Salmos', chapters: 150, abbr: 'Sl', index: 18 },
+                { name: 'Provérbios', chapters: 31, abbr: 'Pv', index: 19 },
+                { name: 'Eclesiastes', chapters: 12, abbr: 'Ec', index: 20 },
+                { name: 'Cantares', chapters: 8, abbr: 'Ct', index: 21 },
+                { name: 'Isaías', chapters: 66, abbr: 'Is', index: 22 },
+                { name: 'Jeremias', chapters: 52, abbr: 'Jr', index: 23 },
+                { name: 'Lamentações', chapters: 5, abbr: 'Lm', index: 24 },
+                { name: 'Ezequiel', chapters: 48, abbr: 'Ez', index: 25 },
+                { name: 'Daniel', chapters: 12, abbr: 'Dn', index: 26 },
+                { name: 'Oséias', chapters: 14, abbr: 'Os', index: 27 },
+                { name: 'Joel', chapters: 3, abbr: 'Jl', index: 28 },
+                { name: 'Amós', chapters: 9, abbr: 'Am', index: 29 },
+                { name: 'Obadias', chapters: 1, abbr: 'Ob', index: 30 },
+                { name: 'Jonas', chapters: 4, abbr: 'Jn', index: 31 },
+                { name: 'Miquéias', chapters: 7, abbr: 'Mq', index: 32 },
+                { name: 'Naum', chapters: 3, abbr: 'Na', index: 33 },
+                { name: 'Habacuque', chapters: 3, abbr: 'Hc', index: 34 },
+                { name: 'Sofonias', chapters: 3, abbr: 'Sf', index: 35 },
+                { name: 'Ageu', chapters: 2, abbr: 'Ag', index: 36 },
+                { name: 'Zacarias', chapters: 14, abbr: 'Zc', index: 37 },
+                { name: 'Malaquias', chapters: 4, abbr: 'Ml', index: 38 }
+            ],
+            newTestament: [
+                { name: 'Mateus', chapters: 28, abbr: 'Mt', index: 39 },
+                { name: 'Marcos', chapters: 16, abbr: 'Mc', index: 40 },
+                { name: 'Lucas', chapters: 24, abbr: 'Lc', index: 41 },
+                { name: 'João', chapters: 21, abbr: 'Jo', index: 42 },
+                { name: 'Atos', chapters: 28, abbr: 'At', index: 43 },
+                { name: 'Romanos', chapters: 16, abbr: 'Rm', index: 44 },
+                { name: '1 Coríntios', chapters: 16, abbr: '1Co', index: 45 },
+                { name: '2 Coríntios', chapters: 13, abbr: '2Co', index: 46 },
+                { name: 'Gálatas', chapters: 6, abbr: 'Gl', index: 47 },
+                { name: 'Efésios', chapters: 6, abbr: 'Ef', index: 48 },
+                { name: 'Filipenses', chapters: 4, abbr: 'Fp', index: 49 },
+                { name: 'Colossenses', chapters: 4, abbr: 'Cl', index: 50 },
+                { name: '1 Tessalonicenses', chapters: 5, abbr: '1Ts', index: 51 },
+                { name: '2 Tessalonicenses', chapters: 3, abbr: '2Ts', index: 52 },
+                { name: '1 Timóteo', chapters: 6, abbr: '1Tm', index: 53 },
+                { name: '2 Timóteo', chapters: 4, abbr: '2Tm', index: 54 },
+                { name: 'Tito', chapters: 3, abbr: 'Tt', index: 55 },
+                { name: 'Filemom', chapters: 1, abbr: 'Fm', index: 56 },
+                { name: 'Hebreus', chapters: 13, abbr: 'Hb', index: 57 },
+                { name: 'Tiago', chapters: 5, abbr: 'Tg', index: 58 },
+                { name: '1 Pedro', chapters: 5, abbr: '1Pe', index: 59 },
+                { name: '2 Pedro', chapters: 3, abbr: '2Pe', index: 60 },
+                { name: '1 João', chapters: 5, abbr: '1Jo', index: 61 },
+                { name: '2 João', chapters: 1, abbr: '2Jo', index: 62 },
+                { name: '3 João', chapters: 1, abbr: '3Jo', index: 63 },
+                { name: 'Judas', chapters: 1, abbr: 'Jd', index: 64 },
+                { name: 'Apocalipse', chapters: 22, abbr: 'Ap', index: 65 }
+            ]
+        };
+
+        const bookNameMap = {
+            'Gn': 'Genesis', 'Ex': 'Exodus', 'Lv': 'Leviticus', 'Nm': 'Numbers', 'Dt': 'Deuteronomy',
+            'Js': 'Joshua', 'Jz': 'Judges', 'Rt': 'Ruth', '1Sm': '1 Samuel', '2Sm': '2 Samuel',
+            '1Rs': '1 Kings', '2Rs': '2 Kings', '1Cr': '1 Chronicles', '2Cr': '2 Chronicles',
+            'Ed': 'Ezra', 'Ne': 'Nehemiah', 'Et': 'Esther', 'Jó': 'Job', 'Sl': 'Psalms',
+            'Pv': 'Proverbs', 'Ec': 'Ecclesiastes', 'Ct': 'Song of Solomon', 'Is': 'Isaiah',
+            'Jr': 'Jeremiah', 'Lm': 'Lamentations', 'Ez': 'Ezekiel', 'Dn': 'Daniel',
+            'Os': 'Hosea', 'Jl': 'Joel', 'Am': 'Amos', 'Ob': 'Obadiah', 'Jn': 'Jonah',
+            'Mq': 'Micah', 'Na': 'Nahum', 'Hc': 'Habakkuk', 'Sf': 'Zephaniah', 'Ag': 'Haggai',
+            'Zc': 'Zechariah', 'Ml': 'Malachi', 'Mt': 'Matthew', 'Mc': 'Mark', 'Lc': 'Luke',
+            'Jo': 'John', 'At': 'Acts', 'Rm': 'Romans', '1Co': '1 Corinthians', '2Co': '2 Corinthians',
+            'Gl': 'Galatians', 'Ef': 'Ephesians', 'Fp': 'Philippians', 'Cl': 'Colossians',
+            '1Ts': '1 Thessalonians', '2Ts': '2 Thessalonians', '1Tm': '1 Timothy', '2Tm': '2 Timothy',
+            'Tt': 'Titus', 'Fm': 'Philemon', 'Hb': 'Hebrews', 'Tg': 'James', '1Pe': '1 Peter',
+            '2Pe': '2 Peter', '1Jo': '1 John', '2Jo': '2 John', '3Jo': '3 John', 'Jd': 'Jude',
+            'Ap': 'Revelation'
+        };
+
+        const readingPlans = {
+            canonical: generateCanonicalPlan(),
+            chronological: generateChronologicalPlan(),
+            'new-testament': generateNTPlan(),
+            gospels: generateGospelsPlan()
+        };
+
+        let currentPlan = 'canonical';
+        let currentDate = new Date();
+        let calendarDate = new Date();
+        let currentVersion = 'ACF';
+        let bibleData = null;
+        let currentReading = null;
+        let deferredPrompt = null;
+        let currentBookSelection = null;
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+        let isSwiping = false;
+        const SWIPE_THRESHOLD = 50;
+
+        function generateCanonicalPlan() {
+            const plan = [];
+            const allBooks = [...bibleBooks.oldTestament, ...bibleBooks.newTestament];
+            let bookIndex = 0;
+            let chapter = 1;
+            
+            for (let day = 1; day <= 365; day++) {
+                if (bookIndex >= allBooks.length) break;
+                const book = allBooks[bookIndex];
+                const chaptersToRead = Math.ceil(book.chapters / Math.ceil(book.chapters / 3));
+                const endChapter = Math.min(chapter + chaptersToRead - 1, book.chapters);
+                
+                plan.push({
+                    day: day,
+                    book: book.name,
+                    abbr: book.abbr,
+                    start: chapter,
+                    end: endChapter,
+                    testament: bookIndex < 39 ? 'old' : 'new'
+                });
+                
+                chapter = endChapter + 1;
+                if (chapter > book.chapters) {
+                    bookIndex++;
+                    chapter = 1;
+                }
+            }
+            return plan;
+        }
+
+        function generateChronologicalPlan() {
+            const chronologicalOrder = [
+                'Gn', 'Jó', 'Ex', 'Lv', 'Nm', 'Dt', 'Js', 'Jz', 'Rt', '1Sm', '2Sm', 
+                '1Cr', 'Sl', 'Ct', 'Pv', 'Ec', '1Rs', '2Rs', '2Cr', 'Is', 'Jr', 'Lm',
+                'Os', 'Jl', 'Am', 'Ob', 'Jn', 'Mq', 'Na', 'Hc', 'Sf', 'Ez', 'Dn',
+                'Ed', 'Et', 'Ne', 'Ag', 'Zc', 'Ml', 'Mt', 'Mc', 'Lc', 'Jo', 'At',
+                '1Ts', '2Ts', '1Co', '2Co', 'Gl', 'Rm', 'Tg', 'Cl', 'Fm', 'Ef', 'Fp',
+                '1Pe', '2Pe', 'Hb', '1Tm', 'Tt', '2Tm', 'Jd', '1Jo', '2Jo', '3Jo', 'Ap'
+            ];
+            
+            const plan = [];
+            const allBooks = [...bibleBooks.oldTestament, ...bibleBooks.newTestament];
+            let day = 1;
+            
+            chronologicalOrder.forEach(abbr => {
+                const book = allBooks.find(b => b.abbr === abbr);
+                if (book) {
+                    let chapter = 1;
+                    while (chapter <= book.chapters && day <= 365) {
+                        const chaptersToRead = Math.min(3, book.chapters - chapter + 1);
+                        plan.push({
+                            day: day++,
+                            book: book.name,
+                            abbr: book.abbr,
+                            start: chapter,
+                            end: chapter + chaptersToRead - 1,
+                            testament: allBooks.indexOf(book) < 39 ? 'old' : 'new'
+                        });
+                        chapter += chaptersToRead;
+                    }
+                }
+            });
+            return plan.slice(0, 365);
+        }
+
+        function generateNTPlan() {
+            const plan = [];
+            let day = 1;
+            bibleBooks.newTestament.forEach(book => {
+                let chapter = 1;
+                while (chapter <= book.chapters && day <= 180) {
+                    const chaptersToRead = Math.min(2, book.chapters - chapter + 1);
+                    plan.push({
+                        day: day++,
+                        book: book.name,
+                        abbr: book.abbr,
+                        start: chapter,
+                        end: chapter + chaptersToRead - 1,
+                        testament: 'new'
+                    });
+                    chapter += chaptersToRead;
+                }
+            });
+            return plan;
+        }
+
+        function generateGospelsPlan() {
+            const gospels = bibleBooks.newTestament.slice(0, 4);
+            const plan = [];
+            let day = 1;
+            gospels.forEach(book => {
+                let chapter = 1;
+                while (chapter <= book.chapters && day <= 90) {
+                    plan.push({
+                        day: day++,
+                        book: book.name,
+                        abbr: book.abbr,
+                        start: chapter,
+                        end: chapter,
+                        testament: 'new'
+                    });
+                    chapter++;
+                }
+            });
+            return plan;
+        }
+
+        function initSwipeGestures() {
+            const readerContent = document.getElementById('readerContent');
+            if (!readerContent) return;
+
+            readerContent.addEventListener('touchstart', handleTouchStart, { passive: true });
+            readerContent.addEventListener('touchmove', handleTouchMove, { passive: false });
+            readerContent.addEventListener('touchend', handleTouchEnd, { passive: true });
+        }
+
+        function handleTouchStart(e) {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+            isSwiping = true;
+        }
+
+        function handleTouchMove(e) {
+            if (!isSwiping) return;
+            
+            const touchX = e.changedTouches[0].screenX;
+            const touchY = e.changedTouches[0].screenY;
+            const diffX = Math.abs(touchX - touchStartX);
+            const diffY = Math.abs(touchY - touchStartY);
+            
+            if (diffX > diffY && diffX > 10) {
+                e.preventDefault();
+            }
+        }
+
+        function handleTouchEnd(e) {
+            if (!isSwiping) return;
+            
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+            
+            handleSwipeGesture();
+            isSwiping = false;
+        }
+
+        function handleSwipeGesture() {
+            const diffX = touchStartX - touchEndX;
+            const diffY = touchStartY - touchEndY;
+            
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > SWIPE_THRESHOLD) {
+                if (diffX > 0) {
+                    showSwipeIndicator('right');
+                    setTimeout(() => nextChapter(), 300);
+                } else {
+                    showSwipeIndicator('left');
+                    setTimeout(() => previousChapter(), 300);
+                }
+            }
+        }
+
+        function showSwipeIndicator(direction) {
+            const indicator = document.getElementById(direction === 'left' ? 'swipeLeftIndicator' : 'swipeRightIndicator');
+            if (indicator) {
+                indicator.classList.add('show');
+                setTimeout(() => indicator.classList.remove('show'), 500);
+            }
+        }
+
+        function initTextHighlight() {
+            const readerContent = document.getElementById('readerContent');
+            if (!readerContent) return;
+
+            readerContent.addEventListener('pointerup', handleTextSelection);
+            readerContent.addEventListener('mouseup', handleTextSelection);
+            readerContent.addEventListener('touchend', handleTextSelection);
+            
+            let selectionTimeout;
+            readerContent.addEventListener('selectionchange', function() {
+                clearTimeout(selectionTimeout);
+                selectionTimeout = setTimeout(handleTextSelection, 100);
+            });
+            
+            document.addEventListener('click', function(e) {
+                const panel = document.getElementById('highlightPanel');
+                if (panel && !panel.contains(e.target) && !readerContent.contains(e.target)) {
+                    closeHighlightPanel();
+                }
+            });
+        }
+
+        function handleTextSelection(e) {
+            setTimeout(() => {
+                const selection = window.getSelection();
+                if (!selection || selection.rangeCount === 0) {
+                    closeHighlightPanel();
+                    return;
+                }
+                
+                const selectedText = selection.toString().trim();
+                const readerContent = document.getElementById('readerContent');
+                
+                if (selectedText.length > 0 && readerContent) {
+                    const range = selection.getRangeAt(0);
+                    if (readerContent.contains(range.commonAncestorContainer)) {
+                        showHighlightPanel();
+                        return;
+                    }
+                }
+                
+                closeHighlightPanel();
+            }, 50);
+        }
+
+        function showHighlightPanel() {
+            const panel = document.getElementById('highlightPanel');
+            const selection = window.getSelection();
+            
+            if (!panel || !selection.rangeCount) return;
+            
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            const readerContent = document.getElementById('readerContent');
+            
+            if (rect.width === 0 || rect.height === 0) return;
+            
+            // Posicionar o painel acima da seleção
+            panel.style.display = 'flex';
+            panel.classList.add('active');
+            
+            // Calcular posição centralizada horizontalmente sobre a seleção
+            const panelWidth = panel.offsetWidth || 280;
+            const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            let left = rect.left + (rect.width / 2) - (panelWidth / 2) + scrollLeft;
+            let top = rect.top - panel.offsetHeight - 10 + scrollTop;
+            
+            // Garantir que não saia da tela
+            const viewportWidth = window.innerWidth;
+            if (left < 10) left = 10;
+            if (left + panelWidth > viewportWidth - 10) left = viewportWidth - panelWidth - 10;
+            if (top < 10) top = rect.bottom + 10 + scrollTop; // Se não couber acima, coloca abaixo
+            
+            panel.style.left = left + 'px';
+            panel.style.top = top + 'px';
+            panel.style.bottom = 'auto';
+            panel.style.transform = 'none';
+        }
+
+        function closeHighlightPanel() {
+            const panel = document.getElementById('highlightPanel');
+            if (panel) {
+                panel.classList.remove('active');
+                panel.style.display = 'none';
+                panel.style.left = '';
+                panel.style.top = '';
+                panel.style.bottom = '';
+                panel.style.transform = '';
+            }
+            window.getSelection().removeAllRanges();
+        }
+
+        function applyHighlight(color) {
+            const selection = window.getSelection();
+            if (!selection.rangeCount) return;
+
+            const range = selection.getRangeAt(0);
+            const selectedText = selection.toString().trim();
+
+            if (selectedText.length === 0) return;
+
+            const readerContent = document.getElementById('readerContent');
+            if (!readerContent || !readerContent.contains(range.commonAncestorContainer)) {
+                closeHighlightPanel();
+                return;
+            }
+
+            const span = document.createElement('span');
+            span.className = 'highlight-' + color;
+
+            try {
+                range.surroundContents(span);
+            } catch (e) {
+                try {
+                    const contents = range.extractContents();
+                    span.appendChild(contents);
+                    range.insertNode(span);
+                } catch (e2) {
+                    console.error("Erro ao aplicar marcação:", e2);
+                    wrapTextNodesInRange(range, "highlight-" + color);
+                }
+            }
+
+            saveHighlights();
+            closeHighlightPanel();
+            selection.removeAllRanges();
+        }
+
+        function wrapTextNodesInRange(range, className) {
+            const walker = document.createTreeWalker(
+                range.commonAncestorContainer,
+                NodeFilter.SHOW_TEXT,
+                null,
+                false
+            );
+
+            const textNodes = [];
+            let node;
+            while (node = walker.nextNode()) {
+                if (range.intersectsNode(node)) {
+                    textNodes.push(node);
+                }
+            }
+
+            textNodes.forEach(textNode => {
+                if (textNode.textContent.trim()) {
+                    const span = document.createElement('span');
+                    span.className = className;
+                    const parent = textNode.parentNode;
+                    if (parent && parent.className && parent.className.includes('highlight-')) {
+                        return;
+                    }
+                    textNode.parentNode.replaceChild(span, textNode);
+                    span.appendChild(textNode);
+                }
+            });
+        }
+
+        function saveHighlights() {
+            const readerContent = document.getElementById('readerContent');
+            if (!readerContent || !currentReading) return;
+
+            const clone = readerContent.cloneNode(true);
+            const nav = clone.querySelector('.reader-nav');
+            if (nav) nav.remove();
+            const loading = clone.querySelector('.loading');
+            if (loading) loading.remove();
+
+            const highlights = clone.innerHTML;
+            const key = 'highlights_' + currentReading.book + '_' + currentReading.chapter;
+            localStorage.setItem(key, highlights);
+        }
+
+        function loadHighlights() {
+            if (!currentReading) return;
+
+            const key = 'highlights_' + currentReading.book + '_' + currentReading.chapter;
+            const savedHighlights = localStorage.getItem(key);
+
+            if (savedHighlights && savedHighlights.trim()) {
+                const readerContent = document.getElementById('readerContent');
+                if (readerContent) {
+                    const nav = readerContent.querySelector('.reader-nav');
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = savedHighlights;
+
+                    const children = Array.from(readerContent.children);
+                    children.forEach(child => {
+                        if (!child.classList || !child.classList.contains('reader-nav')) {
+                            child.remove();
+                        }
+                    });
+
+                    if (nav) {
+                        while (tempDiv.firstChild) {
+                            readerContent.insertBefore(tempDiv.firstChild, nav);
+                        }
+                    } else {
+                        readerContent.insertBefore(tempDiv, readerContent.firstChild);
+                    }
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProgress();
+            loadBibleData();
+            updateDashboard();
+            renderBooks();
+            renderCalendar();
+            updateDate();
+            initPWA();
+            loadReaderSettings();
+            initSwipeGestures();
+            initTextHighlight();
+        });
+
+        function initPWA() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js', { scope: './' })
+                    .then(reg => {
+                        console.log('[PWA] Service Worker registrado:', reg.scope);
+                        setInterval(() => {
+                            reg.update();
+                        }, 3600000);
+                    })
+                    .catch(err => {
+                        console.error('[PWA] Erro ao registrar Service Worker:', err);
+                    });
+            }
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                if (!localStorage.getItem('installDismissed')) {
+                    document.getElementById('installPrompt').classList.add('show');
+                }
+            });
+        }
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted install');
+                    }
+                    deferredPrompt = null;
+                    document.getElementById('installPrompt').classList.remove('show');
+                });
+            }
+        }
+
+        function dismissInstall() {
+            document.getElementById('installPrompt').classList.remove('show');
+            localStorage.setItem('installDismissed', Date.now());
+        }
+
+        async function loadBibleData() {
+            try {
+                const response = await fetch(`./bibles/${currentVersion}.json`);
+                bibleData = await response.json();
+                document.getElementById('versionSelector').value = currentVersion;
+            } catch (error) {
+                console.error('Error loading Bible:', error);
+            }
+        }
+
+        function changeVersion() {
+            currentVersion = document.getElementById('versionSelector').value;
+            localStorage.setItem('preferredVersion', currentVersion);
+            loadBibleData();
+            if (document.getElementById('readerModal').classList.contains('active') && currentReading) {
+                openReader(currentReading.book, currentReading.chapter);
+            }
+        }
+
+        function changeVersionFromReader() {
+            currentVersion = document.getElementById('readerVersionSelector').value;
+            document.getElementById('versionSelector').value = currentVersion;
+            localStorage.setItem('preferredVersion', currentVersion);
+            loadBibleData();
+            if (currentReading) {
+                openReader(currentReading.book, currentReading.chapter);
+            }
+        }
+
+        function updateDate() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('pt-BR', options);
+        }
+
+        function updateDashboard() {
+            const plan = readingPlans[currentPlan];
+            const startDate = new Date(localStorage.getItem('startDate') || new Date());
+            const today = new Date();
+            const dayDiff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+            const currentDay = Math.min(dayDiff, plan.length);
+            
+            const todaysReadings = plan.filter(r => r.day === currentDay);
+            const container = document.getElementById('todaysReading');
+            
+            if (todaysReadings.length === 0) {
+                container.innerHTML = `
+                    <div class="reading-item">
+                        <div class="reading-info">
+                            <h3>Parabéns!</h3>
+                            <p>Você completou o plano de leitura!</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = todaysReadings.map(reading => {
+                    const isCompleted = isReadingCompleted(reading);
+                    return `
+                        <div class="reading-item ${isCompleted ? 'completed' : ''}" onclick="readPlanDay(${reading.day})">
+                            <div class="reading-info">
+                                <h3>${reading.book} ${reading.start}${reading.start !== reading.end ? '-' + reading.end : ''}</h3>
+                                <p>${isCompleted ? '✓ Completado - Clique para reler' : 'Clique para ler'}</p>
+                            </div>
+                            <div class="reading-actions" onclick="event.stopPropagation()">
+                                <button class="btn-icon" onclick="readPlanDay(${reading.day})" title="Ler">
+                                    <i class="fas fa-book-open"></i>
+                                </button>
+                                <button class="btn-icon" onclick="toggleComplete(${reading.day})" title="${isCompleted ? 'Desmarcar' : 'Marcar como lido'}">
+                                    <i class="fas ${isCompleted ? 'fa-undo' : 'fa-check'}"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            updateStats();
+        }
+
+        function readPlanDay(day) {
+            const plan = readingPlans[currentPlan];
+            const reading = plan.find(r => r.day === day);
+            if (reading) {
+                openReader(reading.abbr, reading.start, reading.end);
+            }
+        }
+        
+        async function openReader(bookAbbr, startChapter, endChapter = null) {
+            if (!bibleData) {
+                alert('Carregando Bíblia...');
+                return;
+            }
+
+            currentReading = { book: bookAbbr, chapter: startChapter };
+            const book = [...bibleBooks.oldTestament, ...bibleBooks.newTestament].find(b => b.abbr === bookAbbr);
+            
+            document.getElementById('readerTitle').textContent = 
+                `${book.name} ${startChapter}${endChapter && endChapter !== startChapter ? '-' + endChapter : ''}`;
+            
+            document.getElementById('readerModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            const content = document.getElementById('readerContent');
+            content.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i></div>';
+
+            let html = '';
+            const chaptersToShow = endChapter ? endChapter - startChapter + 1 : 1;
+            
+            const bookData = bibleData[book.index];
+            
+            if (!bookData) {
+                console.error('Livro não encontrado no índice:', book.index);
+                content.innerHTML = `<p style="text-align: center; padding: 2rem;">
+                    <strong>Livro não encontrado.</strong><br>
+                    Verifique se o arquivo JSON está na pasta /bibles/
+                </p>`;
+                return;
+            }
+            
+            const chapters = bookData.chapters || bookData;
+            
+            for (let i = 0; i < chaptersToShow; i++) {
+                const chapterNum = startChapter + i;
+                
+                const chapterData = chapters[chapterNum - 1];
+                
+                if (chapterData) {
+                    html += `<h3 class="chapter-title">${book.name} ${chapterNum}</h3>`;
+                    
+                    if (Array.isArray(chapterData)) {
+                        chapterData.forEach((verse, idx) => {
+                            html += `<div class="verse"><span class="verse-number">${idx + 1}</span><span class="verse-text">${verse}</span></div>`;
+                        });
+                    } else if (typeof chapterData === 'object') {
+                        Object.entries(chapterData).forEach(([num, text]) => {
+                            html += `<div class="verse"><span class="verse-number">${num}</span><span class="verse-text">${text}</span></div>`;
+                        });
+                    } else if (typeof chapterData === 'string') {
+                        html += `<div class="verse"><span class="verse-text">${chapterData}</span></div>`;
+                    }
+                    
+                    if (i < chaptersToShow - 1) {
+                        html += '<hr style="margin: 2rem 0; border: none; border-top: 1px solid #e2e8f0;">';
+                    }
+                } else {
+                    html += `<p style="text-align: center; padding: 2rem;">Capítulo ${chapterNum} não encontrado.</p>`;
+                }
+            }
+            
+            content.innerHTML = html || '<p style="text-align: center; padding: 2rem;">Texto não encontrado.</p>';
+            
+            content.innerHTML += `
+                <div class="reader-nav">
+                    <button class="reader-btn" onclick="navigateChapter(-1)"><i class="fas fa-arrow-left"></i> Anterior</button>
+                    <button class="reader-btn" onclick="toggleCompleteFromReader()"><i class="fas fa-check"></i> Marcar lido</button>
+                    <button class="reader-btn" onclick="navigateChapter(1)">Próximo <i class="fas fa-arrow-right"></i></button>
+                </div>
+            `;
+            
+            loadHighlights();
+        }
+
+        function closeReader() {
+            document.getElementById('readerModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function previousChapter() {
+            if (currentReading && currentReading.chapter > 1) {
+                openReader(currentReading.book, currentReading.chapter - 1);
+            }
+        }
+
+        function nextChapter() {
+            if (currentReading) {
+                openReader(currentReading.book, currentReading.chapter + 1);
+            }
+        }
+
+        function navigateChapter(direction) {
+            if (currentReading) {
+                const newChapter = currentReading.chapter + direction;
+                if (newChapter >= 1) {
+                    const book = [...bibleBooks.oldTestament, ...bibleBooks.newTestament]
+                        .find(b => b.abbr === currentReading.book);
+                    if (book && newChapter <= book.chapters) {
+                        openReader(currentReading.book, newChapter);
+                    }
+                }
+            }
+        }
+
+        function toggleCompleteFromReader() {
+            if (currentReading) {
+                const plan = readingPlans[currentPlan];
+                const reading = plan.find(r => r.abbr === currentReading.book && 
+                    currentReading.chapter >= r.start && currentReading.chapter <= r.end);
+                if (reading) {
+                    toggleComplete(reading.day);
+                }
+            }
+        }
+
+        function openSettings() {
+            document.getElementById('settingsPanel').classList.add('active');
+            document.getElementById('settingsOverlay').classList.add('active');
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsPanel').classList.remove('active');
+            document.getElementById('settingsOverlay').classList.remove('active');
+        }
+
+        function changeTheme(element) {
+            document.querySelectorAll('.color-option').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            document.documentElement.style.setProperty('--reader-bg', element.dataset.bg);
+            document.documentElement.style.setProperty('--reader-text', element.dataset.text);
+            saveReaderSettings();
+        }
+
+        function changeFont(element) {
+            document.querySelectorAll('.font-option').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            document.documentElement.style.setProperty('--reader-font', element.dataset.font);
+            saveReaderSettings();
+        }
+
+        function changeFontSize(size) {
+            document.getElementById('fontSizeValue').textContent = size + 'px';
+            document.documentElement.style.setProperty('--reader-size', size + 'px');
+            saveReaderSettings();
+        }
+
+        function changeSpacing(element) {
+            document.querySelectorAll('.spacing-option').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            document.documentElement.style.setProperty('--reader-line-height', element.dataset.spacing);
+            document.documentElement.style.setProperty('--reader-spacing', element.dataset.spacing);
+            saveReaderSettings();
+        }
+
+        function saveReaderSettings() {
+            const settings = {
+                bg: getComputedStyle(document.documentElement).getPropertyValue('--reader-bg').trim(),
+                text: getComputedStyle(document.documentElement).getPropertyValue('--reader-text').trim(),
+                font: getComputedStyle(document.documentElement).getPropertyValue('--reader-font').trim(),
+                size: document.getElementById('fontSizeSlider').value,
+                spacing: document.documentElement.style.getPropertyValue('--reader-spacing') || '1.8'
+            };
+            localStorage.setItem('readerSettings', JSON.stringify(settings));
+        }
+
+        function loadReaderSettings() {
+            const settings = JSON.parse(localStorage.getItem('readerSettings'));
+            if (settings) {
+                document.documentElement.style.setProperty('--reader-bg', settings.bg);
+                document.documentElement.style.setProperty('--reader-text', settings.text);
+                document.documentElement.style.setProperty('--reader-font', settings.font);
+                document.documentElement.style.setProperty('--reader-size', settings.size + 'px');
+                document.documentElement.style.setProperty('--reader-line-height', settings.spacing || '1.8');
+                document.documentElement.style.setProperty('--reader-spacing', settings.spacing || '1.8');
+                document.getElementById('fontSizeSlider').value = settings.size;
+                document.getElementById('fontSizeValue').textContent = settings.size + 'px';
+                
+                document.querySelectorAll('.color-option').forEach(el => {
+                    if (el.dataset.bg === settings.bg) el.classList.add('active');
+                    else el.classList.remove('active');
+                });
+                
+                document.querySelectorAll('.font-option').forEach(el => {
+                    if (el.dataset.font === settings.font) el.classList.add('active');
+                    else el.classList.remove('active');
+                });
+
+                document.querySelectorAll('.spacing-option').forEach(el => {
+                    if (el.dataset.spacing === (settings.spacing || '1.8')) el.classList.add('active');
+                    else el.classList.remove('active');
+                });
+            }
+        }
+
+        function updateStats() {
+            const completed = getCompletedReadings();
+            const totalDays = readingPlans[currentPlan].length;
+            const percentage = Math.round((completed.length / totalDays) * 100);
+            
+            document.getElementById('daysCompleted').textContent = completed.length;
+            document.getElementById('chaptersRead').textContent = calculateChaptersRead(completed);
+            document.getElementById('currentStreak').textContent = calculateStreak();
+            document.getElementById('streakDisplay').textContent = calculateStreak() + ' dias';
+            document.getElementById('progressPercent').textContent = percentage + '%';
+            
+            const circle = document.getElementById('progressCircle');
+            const circumference = 553;
+            const offset = circumference - (percentage / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+        }
+
+        function calculateChaptersRead(completed) {
+            let count = 0;
+            completed.forEach(day => {
+                const reading = readingPlans[currentPlan].find(r => r.day === day);
+                if (reading) count += (reading.end - reading.start + 1);
+            });
+            return count;
+        }
+
+        function calculateStreak() {
+            const completed = getCompletedReadings().sort((a, b) => b - a);
+            if (completed.length === 0) return 0;
+            let streak = 0;
+            let checkDay = completed[0];
+            for (let day of completed) {
+                if (day === checkDay) {
+                    streak++;
+                    checkDay--;
+                } else break;
+            }
+            return streak;
+        }
+
+        function getCompletedReadings() {
+            const data = localStorage.getItem(`completed_${currentPlan}`);
+            return data ? JSON.parse(data) : [];
+        }
+
+        function isReadingCompleted(reading) {
+            return getCompletedReadings().includes(reading.day);
+        }
+
+        function toggleComplete(day) {
+            let completed = getCompletedReadings();
+            if (completed.includes(day)) {
+                completed = completed.filter(d => d !== day);
+            } else {
+                completed.push(day);
+            }
+            localStorage.setItem(`completed_${currentPlan}`, JSON.stringify(completed));
+            updateDashboard();
+            renderCalendar();
+        }
+
+        function selectPlan(planId) {
+            currentPlan = planId;
+            localStorage.setItem('currentPlan', planId);
+            document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            localStorage.setItem('startDate', new Date().toISOString());
+            updateDashboard();
+            renderCalendar();
+            setTimeout(() => showSection('dashboard'), 500);
+        }
+
+        function showSection(sectionId) {
+            const navMenu = document.getElementById('navMenu');
+            if (navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+            }
+
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            document.querySelectorAll('.nav-menu a').forEach(a => a.classList.remove('active'));
+            
+            const activeLink = document.querySelector(`.nav-menu a[onclick="showSection('${sectionId}')"]`);
+            if (activeLink) activeLink.classList.add('active');
+            
+            if (sectionId === 'calendar') renderCalendar();
+            if (sectionId === 'books') renderBooks();
+        }
+
+        function renderBooks() {
+            const oldContainer = document.getElementById('oldTestament');
+            const newContainer = document.getElementById('newTestament');
+            
+            oldContainer.innerHTML = bibleBooks.oldTestament.map(book => `
+                <div class="book-item" onclick="openChapterModal('${book.abbr}')">
+                    <span class="book-name">${book.name}</span>
+                    <span class="book-progress">${book.chapters} cap.</span>
+                </div>
+            `).join('');
+            
+            newContainer.innerHTML = bibleBooks.newTestament.map(book => `
+                <div class="book-item" onclick="openChapterModal('${book.abbr}')">
+                    <span class="book-name">${book.name}</span>
+                    <span class="book-progress">${book.chapters} cap.</span>
+                </div>
+            `).join('');
+        }
+
+        function openChapterModal(bookAbbr) {
+            const book = [...bibleBooks.oldTestament, ...bibleBooks.newTestament].find(b => b.abbr === bookAbbr);
+            if (!book) return;
+
+            currentBookSelection = book;
+            document.getElementById('chapterModalTitle').textContent = `Selecionar Capítulo - ${book.name}`;
+            
+            const grid = document.getElementById('chapterGrid');
+            grid.innerHTML = '';
+            
+            for (let i = 1; i <= book.chapters; i++) {
+                grid.innerHTML += `
+                    <button class="chapter-btn" onclick="event.stopPropagation(); selectChapter(${i})">${i}</button>
+                `;
+            }
+            
+            document.getElementById('chapterModal').classList.add('active');
+        }
+
+        function closeChapterModal() {
+            document.getElementById('chapterModal').classList.remove('active');
+            setTimeout(() => {
+                currentBookSelection = null;
+            }, 300);
+        }
+
+        function selectChapter(chapterNum) {
+            if (currentBookSelection) {
+                const book = currentBookSelection;
+                closeChapterModal();
+                setTimeout(() => {
+                    openReader(book.abbr, chapterNum);
+                }, 50);
+            }
+        }
+
+        function renderCalendar() {
+            const year = calendarDate.getFullYear();
+            const month = calendarDate.getMonth();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            document.getElementById('calendarMonth').textContent = 
+                calendarDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+            
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+            
+            const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+            days.forEach(day => grid.innerHTML += `<div class="calendar-day-header">${day}</div>`);
+            
+            for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div></div>`;
+            
+            const today = new Date();
+            const completed = getCompletedReadings();
+            const plan = readingPlans[currentPlan];
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const isToday = date.toDateString() === today.toDateString();
+                const startDate = new Date(localStorage.getItem('startDate') || new Date());
+                const dayDiff = Math.floor((date - startDate) / (1000 * 60 * 60 * 24)) + 1;
+                
+                let statusClass = '';
+                if (isToday) statusClass = 'today';
+                else if (completed.includes(dayDiff)) statusClass = 'completed';
+                else if (dayDiff > 0 && dayDiff <= plan.length) statusClass = 'pending';
+                
+                grid.innerHTML += `<div class="calendar-day ${statusClass}" onclick="readPlanDay(${dayDiff})">${day}</div>`;
+            }
+        }
+
+        function changeMonth(delta) {
+            calendarDate.setMonth(calendarDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        function toggleMenu() {
+            document.getElementById('navMenu').classList.toggle('active');
+        }
+
+        function loadProgress() {
+            const savedPlan = localStorage.getItem('currentPlan');
+            if (savedPlan && readingPlans[savedPlan]) currentPlan = savedPlan;
+            const savedVersion = localStorage.getItem('preferredVersion');
+            if (savedVersion) currentVersion = savedVersion;
+            if (!localStorage.getItem('startDate')) localStorage.setItem('startDate', new Date().toISOString());
+        }
+
+        document.getElementById('chapterModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeChapterModal();
+            }
+        });
+    </script>
+</body>
+</html>
