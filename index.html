@@ -1,0 +1,2071 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1e40af">
+    <title>Bíblia 365 - Completo</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --primary: #1e40af;
+            --secondary: #14b8a6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --reader-bg: #ffffff;
+            --reader-text: #1e293b;
+            --font-family: 'Georgia', 'Times New Roman', serif;
+            --font-size: 18px;
+            --line-height: 1.8;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        [data-theme="sepia"] {
+            --bg: #f5f0e6;
+            --card: #faf6ed;
+            --text: #4a3f35;
+            --text-muted: #8b7355;
+            --border: #d9c8a9;
+        }
+
+        [data-theme="night"] {
+            --bg: #020617;
+            --card: #0f172a;
+            --text: #e2e8f0;
+            --text-muted: #64748b;
+            --border: #1e293b;
+        }
+
+        [data-reader-theme="light"] {
+            --reader-bg: #ffffff;
+            --reader-text: #1e293b;
+        }
+
+        [data-reader-theme="dark"] {
+            --reader-bg: #1e293b;
+            --reader-text: #f1f5f9;
+        }
+
+        [data-reader-theme="sepia"] {
+            --reader-bg: #f4ecd8;
+            --reader-text: #433422;
+        }
+
+        [data-reader-theme="night"] {
+            --reader-bg: #0f172a;
+            --reader-text: #cbd5e1;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        #splash {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+
+        #splash.hidden { opacity: 0; pointer-events: none; }
+
+        .splash-icon { font-size: 80px; margin-bottom: 20px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+
+        .splash-title { color: white; font-size: 42px; font-weight: bold; margin-bottom: 10px; }
+        .splash-subtitle { color: rgba(255,255,255,0.9); font-size: 18px; margin-bottom: 30px; }
+
+        .splash-loader {
+            width: 200px; height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .loader-bar {
+            height: 100%; width: 0%;
+            background: white;
+            border-radius: 2px;
+            animation: loading 1.5s ease-in-out infinite;
+        }
+
+        @keyframes loading {
+            0% { width: 0%; margin-left: 0; }
+            50% { width: 100%; margin-left: 0; }
+            100% { width: 0%; margin-left: 100%; }
+        }
+
+        #startBtn {
+            background: white; color: var(--primary);
+            border: none; padding: 15px 50px;
+            border-radius: 30px; font-size: 18px; font-weight: bold;
+            cursor: pointer; opacity: 0; transform: translateY(20px);
+            transition: all 0.3s;
+        }
+
+        #startBtn.visible { opacity: 1; transform: translateY(0); }
+
+        #app { display: none; }
+        #app.visible { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .header-brand { display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: bold; }
+        .header-btn {
+            background: rgba(255,255,255,0.2); border: none; color: white;
+            width: 40px; height: 40px; border-radius: 10px;
+            cursor: pointer; font-size: 20px;
+        }
+
+        .tabs {
+            display: flex; background: var(--card); padding: 10px; gap: 5px;
+            overflow-x: auto; border-bottom: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1; min-width: 70px; background: #f0f0f0;
+            border: none; padding: 12px 8px; border-radius: 12px;
+            font-size: 13px; font-weight: 500; color: #666;
+            cursor: pointer; white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .content { padding: 20px; max-width: 800px; margin: 0 auto; padding-bottom: 100px; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; animation: slideUp 0.3s; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: var(--card); border-radius: 20px;
+            padding: 25px; margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .welcome-card h2 { font-size: 22px; margin-bottom: 10px; }
+
+        .btn-primary {
+            width: 100%; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white; border: none; padding: 15px;
+            border-radius: 12px; font-size: 16px; font-weight: 600;
+            cursor: pointer;
+        }
+
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;
+        }
+
+        .stat-box {
+            background: var(--card); border-radius: 15px;
+            padding: 20px; text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stat-value { font-size: 28px; font-weight: bold; color: var(--primary); }
+        .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; }
+
+        .search-box { position: relative; margin-bottom: 15px; }
+        .search-box input {
+            width: 100%; padding: 15px 20px 15px 45px;
+            border: 2px solid var(--border); border-radius: 12px;
+            font-size: 16px; background: var(--card); color: var(--text);
+        }
+
+        .filter-tabs {
+            display: flex; gap: 10px; margin-bottom: 15px;
+        }
+
+        .filter-btn {
+            flex: 1; background: var(--card); border: 2px solid var(--border);
+            padding: 10px; border-radius: 10px; font-size: 14px;
+            color: #666; cursor: pointer;
+        }
+
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .books-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .book-card {
+            background: var(--card); border: 2px solid var(--border);
+            border-radius: 12px; padding: 15px 10px;
+            text-align: center; cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .book-card:hover { border-color: var(--primary); transform: translateY(-3px); }
+
+        .book-abbr { font-size: 20px; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
+        .book-name { font-size: 12px; color: var(--text-muted); }
+
+        #reader {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--reader-bg);
+            z-index: 2000;
+            flex-direction: column;
+        }
+
+        #reader.visible { display: flex; }
+
+        .reader-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white; padding: 15px 20px;
+            display: flex; align-items: center; gap: 15px;
+            flex-shrink: 0;
+        }
+
+        .reader-title { flex: 1; text-align: center; }
+        .reader-title .book { font-size: 20px; font-weight: bold; display: block; }
+        .reader-title .chapter { font-size: 14px; opacity: 0.9; }
+
+        .reader-toolbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 20px; background: var(--card);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: #f0f0f0; border: none;
+            padding: 10px 15px; border-radius: 10px;
+            font-size: 14px; cursor: pointer; white-space: nowrap;
+        }
+
+        .nav-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        #versionSelect {
+            padding: 10px; border: 2px solid var(--border);
+            border-radius: 10px; font-size: 14px; background: var(--card);
+            min-width: 80px;
+        }
+
+        /* CORREÇÃO: Container de leitura - apenas UMA página visível */
+        .reader-content-container {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+        }
+
+        .reader-content-track {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.3s ease-out;
+        }
+
+        .reader-content-track.swiping-left {
+            transform: translateX(-30%);
+        }
+
+        .reader-content-track.swiping-right {
+            transform: translateX(30%);
+        }
+
+        #readerContent {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 20px;
+            font-family: var(--font-family);
+            font-size: var(--font-size);
+            line-height: var(--line-height);
+            color: var(--reader-text);
+            background: var(--reader-bg);
+            width: 100%;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .verse {
+            margin-bottom: 2px;
+            padding: 1px 4px;
+            display: flex;
+            gap: 8px;
+            align-items: baseline;
+            user-select: text;
+            -webkit-user-select: text;
+            transition: background-color 0.2s;
+            border-radius: 4px;
+            padding: 2px 4px;
+        }
+
+        .verse.selected {
+            background-color: rgba(30, 64, 175, 0.15);
+        }
+
+        .verse-num {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 12px;
+            min-width: 20px;
+            flex-shrink: 0;
+            opacity: 0.7;
+        }
+
+        .verse-text { 
+            flex: 1;
+            text-align: justify;
+        }
+
+        /* CORES SÓLIDAS PARA MARCAÇÃO */
+        .verse-text .highlight {
+            background: #fef3c7;
+            padding: 2px 4px; border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .verse-text .highlight:hover {
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+        }
+
+        .verse-text .highlight.green { background: #a7f3d0; }
+        .verse-text .highlight.blue { background: #bfdbfe; }
+        .verse-text .highlight.pink { background: #fbcfe8; }
+
+        .reader-actions {
+            display: flex;
+            gap: 10px;
+            padding: 15px 20px;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            transform: translateY(100%);
+            transition: transform 0.25s cubic-bezier(0.4, 0.0, 0.2, 1);
+            will-change: transform;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 3000;
+        }
+
+        .reader-actions.visible {
+            transform: translateY(0);
+        }
+
+        .reader-actions button {
+            flex: 1; padding: 12px; border: none;
+            border-radius: 10px; font-size: 14px; font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-read { background: var(--success); color: white; }
+        .btn-mark { background: #f0f0f0; color: #333; }
+        .btn-settings { background: var(--primary); color: white; }
+
+        .settings-panel {
+            display: none;
+            position: absolute;
+            bottom: 80px;
+            left: 20px;
+            right: 20px;
+            background: var(--card);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+            z-index: 2100;
+            animation: slideUp 0.3s;
+        }
+
+        .settings-panel.visible { display: block; }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .settings-title { font-size: 18px; font-weight: bold; }
+
+        .settings-close {
+            background: none; border: none; font-size: 24px;
+            cursor: pointer; color: var(--text);
+        }
+
+        .setting-group { margin-bottom: 20px; }
+        .setting-label { font-size: 14px; color: var(--text-muted); margin-bottom: 10px; display: block; }
+
+        .theme-options, .font-options {
+            display: flex; gap: 10px; flex-wrap: wrap;
+        }
+
+        .theme-btn, .font-btn {
+            flex: 1; min-width: 70px; padding: 10px;
+            border: 2px solid var(--border); border-radius: 10px;
+            background: var(--card); cursor: pointer;
+            font-size: 13px;
+        }
+
+        .theme-btn.active, .font-btn.active {
+            border-color: var(--primary); background: rgba(30, 64, 175, 0.1);
+        }
+
+        .range-slider {
+            width: 100%; margin: 10px 0;
+        }
+
+        .range-value {
+            text-align: center; font-weight: bold; color: var(--primary);
+        }
+
+        .highlight-panel {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            background: var(--card);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            z-index: 9999;
+            flex-direction: column;
+            min-width: 200px;
+            max-width: 280px;
+            border: 1px solid var(--border);
+            pointer-events: auto;
+        }
+
+        .highlight-panel.visible { 
+            display: flex; 
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .highlight-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .highlight-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .highlight-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: var(--text-muted);
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .highlight-close:hover {
+            background: rgba(0,0,0,0.1);
+            color: var(--text);
+        }
+
+        .highlight-colors {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .highlight-color {
+            width: 40px; height: 40px; border-radius: 50%;
+            border: 3px solid transparent; cursor: pointer;
+            transition: transform 0.2s;
+            padding: 0;
+            background: none;
+            flex-shrink: 0;
+        }
+
+        .highlight-color:hover { transform: scale(1.2); border-color: var(--text-muted); }
+        .highlight-color:active { transform: scale(0.95); }
+        .highlight-color.active { border-color: var(--text); }
+
+        .highlight-yellow { background: #fde68a; }
+        .highlight-green { background: #a7f3d0; }
+        .highlight-blue { background: #bfdbfe; }
+        .highlight-pink { background: #fbcfe8; }
+
+        /* Modal de confirmação para remover marcação */
+        .remove-highlight-modal {
+            display: none;
+            position: fixed;
+            background: var(--card);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            z-index: 10000;
+            min-width: 200px;
+            border: 1px solid var(--border);
+        }
+
+        .remove-highlight-modal.visible {
+            display: block;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .remove-highlight-modal p {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .remove-highlight-btn {
+            width: 100%;
+            padding: 10px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .remove-highlight-btn:hover {
+            background: #dc2626;
+        }
+
+        .modal {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.7);
+            z-index: 3000; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active { display: flex; }
+
+        .modal-content {
+            background: var(--card); border-radius: 20px;
+            width: 100%; max-width: 400px; max-height: 80vh;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white; padding: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .chapter-grid {
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            gap: 10px; padding: 20px; max-height: 60vh; overflow-y: auto;
+        }
+
+        .chapter-btn {
+            aspect-ratio: 1; background: #f0f0f0; border: none;
+            border-radius: 10px; font-size: 16px; font-weight: 600;
+            cursor: pointer;
+        }
+
+        .chapter-btn:hover { background: var(--primary); color: white; }
+        .chapter-btn.read { background: var(--success); color: white; }
+
+        .plan-card {
+            background: var(--card); border-radius: 15px;
+            padding: 20px; margin-bottom: 15px;
+            border: 2px solid transparent; cursor: pointer;
+        }
+
+        .plan-card:hover { border-color: var(--primary); }
+        .plan-card.active { border-color: var(--primary); background: rgba(30, 64, 175, 0.05); }
+
+        .plan-icon { font-size: 40px; margin-bottom: 10px; }
+        .plan-name { font-size: 18px; font-weight: bold; margin-bottom: 5px; }
+        .plan-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 10px; }
+
+        .plan-badge {
+            display: inline-block; background: var(--primary);
+            color: white; padding: 5px 10px;
+            border-radius: 10px; font-size: 12px;
+        }
+
+        .plan-progress {
+            margin-top: 15px;
+            background: #f0f0f0;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .plan-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s;
+        }
+
+        .plan-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .toast {
+            position: fixed; bottom: 100px; left: 50%;
+            transform: translateX(-50%); background: #333;
+            color: white; padding: 15px 25px;
+            border-radius: 10px; z-index: 5000;
+            animation: slideUp 0.3s;
+        }
+
+        .toast.success { background: var(--success); }
+        .toast.error { background: #ef4444; }
+        .toast.warning { background: var(--warning); }
+        .toast.info { background: #3b82f6; }
+
+        .today-content {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .loading-text {
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .reading-item {
+            padding: 12px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .reading-item strong {
+            color: var(--primary);
+        }
+
+        /* Indicador de página */
+        .page-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .page-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        .page-dot.active {
+            background: var(--primary);
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 480px) {
+            .splash-title { font-size: 32px; }
+            .tab-btn { font-size: 12px; padding: 10px 5px; min-width: 60px; }
+            .books-grid { grid-template-columns: repeat(3, 1fr); }
+            .chapter-grid { grid-template-columns: repeat(4, 1fr); }
+            #readerContent { padding: 20px 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="splash">
+        <div class="splash-icon">📖</div>
+        <h1 class="splash-title">Bíblia 365</h1>
+        <p class="splash-subtitle">Sua jornada diária pela Palavra</p>
+        <div class="splash-loader"><div class="loader-bar"></div></div>
+        <button id="startBtn" onclick="App.start()">Iniciar</button>
+    </div>
+
+    <div id="app">
+        <header class="header">
+            <div class="header-brand">📖 Bíblia 365</div>
+            <button class="header-btn" onclick="App.toggleTheme()" title="Tema">🎨</button>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" onclick="App.switchTab('home', this)">🏠 Início</button>
+            <button class="tab-btn" onclick="App.switchTab('books', this)">📚 Livros</button>
+            <button class="tab-btn" onclick="App.switchTab('plans', this)">📅 Planos</button>
+            <button class="tab-btn" onclick="App.switchTab('progress', this)">📊 Progresso</button>
+        </nav>
+
+        <main class="content">
+            <section id="homePanel" class="tab-panel active">
+                <div class="card welcome-card">
+                    <h2>Bem-vindo à sua jornada!</h2>
+                    <p id="welcomeText">Leia a Bíblia diariamente com nosso plano de leitura.</p>
+                </div>
+
+                <div class="card" id="todayReadingCard" style="display: none;">
+                    <h3 style="margin-bottom: 15px;">📖 Leitura de Hoje</h3>
+                    <div id="todayReadingContent" class="today-content">
+                        <p class="loading-text">Carregando...</p>
+                    </div>
+                    <button class="btn-primary" onclick="App.readToday()">Ler Agora</button>
+                </div>
+
+                <div class="card" id="noPlanCard">
+                    <h3 style="margin-bottom: 15px;">📖 Comece sua jornada</h3>
+                    <p style="color: #666; margin-bottom: 15px;">Selecione um plano de leitura para começar.</p>
+                    <button class="btn-primary" onclick="App.switchTab('plans', document.querySelectorAll('.tab-btn')[2])">Ver Planos</button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <span class="stat-value" id="streakDays">0</span>
+                        <span class="stat-label">Dias</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-value" id="totalRead">0</span>
+                        <span class="stat-label">Capítulos</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-value" id="planProgress">0%</span>
+                        <span class="stat-label">Progresso</span>
+                    </div>
+                </div>
+            </section>
+
+            <section id="booksPanel" class="tab-panel">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Buscar livro..." oninput="App.searchBooks(this.value)">
+                </div>
+
+                <div class="filter-tabs">
+                    <button class="filter-btn active" onclick="App.filterTestament('all', this)">Todos</button>
+                    <button class="filter-btn" onclick="App.filterTestament('AT', this)">🐑 AT</button>
+                    <button class="filter-btn" onclick="App.filterTestament('NT', this)">✝️ NT</button>
+                </div>
+
+                <div id="booksGrid" class="books-grid"></div>
+            </section>
+
+            <section id="plansPanel" class="tab-panel">
+                <h2 style="margin-bottom: 20px;">Planos de Leitura</h2>
+                <div id="plansList"></div>
+            </section>
+
+            <section id="progressPanel" class="tab-panel">
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 60px; margin-bottom: 20px;">📊</div>
+                    <h3>Seu Progresso</h3>
+                    <div id="progressDetails" style="margin-top: 20px;">
+                        <p style="color: #666;">Carregando...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="reader">
+        <div class="reader-header">
+            <button class="header-btn" onclick="App.closeReader()">✕</button>
+            <div class="reader-title">
+                <span class="book" id="readerBook">Livro</span>
+                <span class="chapter" id="readerChapter">Capítulo 1</span>
+            </div>
+            <button class="header-btn" onclick="App.openSettings()">⚙️</button>
+        </div>
+
+        <div class="reader-toolbar">
+            <button class="nav-btn" id="prevBtn" onclick="App.prevChapter()">◀ Anterior</button>
+            <select id="versionSelect" onchange="App.changeVersion(this.value)">
+                <option value="ARA">ARA</option>
+                <option value="ACF">ACF</option>
+                <option value="ARC">ARC</option>
+                <option value="KJF">KJF</option>
+                <option value="NVI">NVI</option>
+                <option value="NAA">NAA</option>
+            </select>
+            <button class="nav-btn" id="nextBtn" onclick="App.nextChapter()">Próximo ▶</button>
+        </div>
+
+        <!-- CORREÇÃO: Container simplificado - apenas uma página visível -->
+        <div class="reader-content-container" id="readerContainer">
+            <div class="reader-content-track" id="readerTrack">
+                <div id="readerContent"></div>
+            </div>
+            <!-- Indicadores de página -->
+            <div class="page-indicator" id="pageIndicator">
+                <div class="page-dot"></div>
+                <div class="page-dot active"></div>
+                <div class="page-dot"></div>
+            </div>
+        </div>
+
+        <div id="settingsPanel" class="settings-panel">
+            <div class="settings-header">
+                <span class="settings-title">Configurações do Leitor</span>
+                <button class="settings-close" onclick="App.closeSettings()">✕</button>
+            </div>
+
+            <div class="setting-group">
+                <span class="setting-label">Tema de Fundo</span>
+                <div class="theme-options">
+                    <button class="theme-btn active" onclick="App.setReaderTheme('light', this)">☀️ Claro</button>
+                    <button class="theme-btn" onclick="App.setReaderTheme('dark', this)">🌙 Escuro</button>
+                    <button class="theme-btn" onclick="App.setReaderTheme('sepia', this)">📜 Sépia</button>
+                    <button class="theme-btn" onclick="App.setReaderTheme('night', this)">🌌 Noite</button>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <span class="setting-label">Tipo de Fonte</span>
+                <div class="font-options">
+                    <button class="font-btn active" onclick="App.setFont('serif', this)">Serif</button>
+                    <button class="font-btn" onclick="App.setFont('sans', this)">Sans</button>
+                    <button class="font-btn" onclick="App.setFont('mono', this)">Mono</button>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <span class="setting-label">Tamanho da Fonte</span>
+                <input type="range" class="range-slider" min="12" max="32" value="18" id="fontSizeSlider" oninput="App.setFontSize(this.value)">
+                <div class="range-value" id="fontSizeValue">18px</div>
+            </div>
+
+            <div class="setting-group">
+                <span class="setting-label">Espaçamento entre Linhas</span>
+                <input type="range" class="range-slider" min="1" max="3" step="0.1" value="1.8" id="lineHeightSlider" oninput="App.setLineHeight(this.value)">
+                <div class="range-value" id="lineHeightValue">1.8</div>
+            </div>
+        </div>
+
+        <div id="highlightPanel" class="highlight-panel">
+            <div class="highlight-header">
+                <span class="highlight-title">🖍️ Marcar texto</span>
+                <button class="highlight-close" onclick="App.closeHighlightPanel(); return false;" title="Fechar">✕</button>
+            </div>
+            <div class="highlight-colors">
+                <button class="highlight-color highlight-yellow" onclick="App.highlightSelection('yellow'); return false;" title="Amarelo" type="button"></button>
+                <button class="highlight-color highlight-green" onclick="App.highlightSelection('green'); return false;" title="Verde" type="button"></button>
+                <button class="highlight-color highlight-blue" onclick="App.highlightSelection('blue'); return false;" title="Azul" type="button"></button>
+                <button class="highlight-color highlight-pink" onclick="App.highlightSelection('pink'); return false;" title="Rosa" type="button"></button>
+            </div>
+        </div>
+
+        <!-- Modal para remover marcação -->
+        <div id="removeHighlightModal" class="remove-highlight-modal">
+            <p>Deseja remover esta marcação?</p>
+            <button class="remove-highlight-btn" onclick="App.confirmRemoveHighlight()">Remover marcação</button>
+        </div>
+
+        <div class="reader-actions" id="readerActions">
+            <button class="btn-settings" onclick="App.openSettings()">⚙️ Config</button>
+            <button class="btn-mark" onclick="App.openHighlight()">🖍️ Marcar</button>
+            <button class="btn-read" onclick="App.markAsRead()">✓ Lido</button>
+        </div>
+    </div>
+
+    <div id="chapterModal" class="modal" onclick="if(event.target===this)App.closeChapterModal()">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Escolha o capítulo</h3>
+                <button class="header-btn" onclick="App.closeChapterModal()">✕</button>
+            </div>
+            <div id="chapterGrid" class="chapter-grid"></div>
+        </div>
+    </div>
+
+    <script>
+
+        const books = [
+            {abbr:'Gn',name:'Gênesis',chapters:50,testament:'AT',index:0},
+            {abbr:'Ex',name:'Êxodo',chapters:40,testament:'AT',index:1},
+            {abbr:'Lv',name:'Levítico',chapters:27,testament:'AT',index:2},
+            {abbr:'Nm',name:'Números',chapters:36,testament:'AT',index:3},
+            {abbr:'Dt',name:'Deuteronômio',chapters:34,testament:'AT',index:4},
+            {abbr:'Js',name:'Josué',chapters:24,testament:'AT',index:5},
+            {abbr:'Jz',name:'Juízes',chapters:21,testament:'AT',index:6},
+            {abbr:'Rt',name:'Rute',chapters:4,testament:'AT',index:7},
+            {abbr:'1Sm',name:'1 Samuel',chapters:31,testament:'AT',index:8},
+            {abbr:'2Sm',name:'2 Samuel',chapters:24,testament:'AT',index:9},
+            {abbr:'1Rs',name:'1 Reis',chapters:22,testament:'AT',index:10},
+            {abbr:'2Rs',name:'2 Reis',chapters:25,testament:'AT',index:11},
+            {abbr:'1Cr',name:'1 Crônicas',chapters:29,testament:'AT',index:12},
+            {abbr:'2Cr',name:'2 Crônicas',chapters:36,testament:'AT',index:13},
+            {abbr:'Ed',name:'Esdras',chapters:10,testament:'AT',index:14},
+            {abbr:'Ne',name:'Neemias',chapters:13,testament:'AT',index:15},
+            {abbr:'Et',name:'Ester',chapters:10,testament:'AT',index:16},
+            {abbr:'Jó',name:'Jó',chapters:42,testament:'AT',index:17},
+            {abbr:'Sl',name:'Salmos',chapters:150,testament:'AT',index:18},
+            {abbr:'Pv',name:'Provérbios',chapters:31,testament:'AT',index:19},
+            {abbr:'Ec',name:'Eclesiastes',chapters:12,testament:'AT',index:20},
+            {abbr:'Ct',name:'Cantares',chapters:8,testament:'AT',index:21},
+            {abbr:'Is',name:'Isaías',chapters:66,testament:'AT',index:22},
+            {abbr:'Jr',name:'Jeremias',chapters:52,testament:'AT',index:23},
+            {abbr:'Lm',name:'Lamentações',chapters:5,testament:'AT',index:24},
+            {abbr:'Ez',name:'Ezequiel',chapters:48,testament:'AT',index:25},
+            {abbr:'Dn',name:'Daniel',chapters:12,testament:'AT',index:26},
+            {abbr:'Os',name:'Oséias',chapters:14,testament:'AT',index:27},
+            {abbr:'Jl',name:'Joel',chapters:3,testament:'AT',index:28},
+            {abbr:'Am',name:'Amós',chapters:9,testament:'AT',index:29},
+            {abbr:'Ob',name:'Obadias',chapters:1,testament:'AT',index:30},
+            {abbr:'Jn',name:'Jonas',chapters:4,testament:'AT',index:31},
+            {abbr:'Mq',name:'Miquéias',chapters:7,testament:'AT',index:32},
+            {abbr:'Na',name:'Naum',chapters:3,testament:'AT',index:33},
+            {abbr:'Hc',name:'Habacuque',chapters:3,testament:'AT',index:34},
+            {abbr:'Sf',name:'Sofonias',chapters:3,testament:'AT',index:35},
+            {abbr:'Ag',name:'Ageu',chapters:2,testament:'AT',index:36},
+            {abbr:'Zc',name:'Zacarias',chapters:14,testament:'AT',index:37},
+            {abbr:'Ml',name:'Malaquias',chapters:4,testament:'AT',index:38},
+            {abbr:'Mt',name:'Mateus',chapters:28,testament:'NT',index:39},
+            {abbr:'Mc',name:'Marcos',chapters:16,testament:'NT',index:40},
+            {abbr:'Lc',name:'Lucas',chapters:24,testament:'NT',index:41},
+            {abbr:'Jo',name:'João',chapters:21,testament:'NT',index:42},
+            {abbr:'At',name:'Atos',chapters:28,testament:'NT',index:43},
+            {abbr:'Rm',name:'Romanos',chapters:16,testament:'NT',index:44},
+            {abbr:'1Co',name:'1 Coríntios',chapters:16,testament:'NT',index:45},
+            {abbr:'2Co',name:'2 Coríntios',chapters:13,testament:'NT',index:46},
+            {abbr:'Gl',name:'Gálatas',chapters:6,testament:'NT',index:47},
+            {abbr:'Ef',name:'Efésios',chapters:6,testament:'NT',index:48},
+            {abbr:'Fp',name:'Filipenses',chapters:4,testament:'NT',index:49},
+            {abbr:'Cl',name:'Colossenses',chapters:4,testament:'NT',index:50},
+            {abbr:'1Ts',name:'1 Tessalonicenses',chapters:5,testament:'NT',index:51},
+            {abbr:'2Ts',name:'2 Tessalonicenses',chapters:3,testament:'NT',index:52},
+            {abbr:'1Tm',name:'1 Timóteo',chapters:6,testament:'NT',index:53},
+            {abbr:'2Tm',name:'2 Timóteo',chapters:4,testament:'NT',index:54},
+            {abbr:'Tt',name:'Tito',chapters:3,testament:'NT',index:55},
+            {abbr:'Fm',name:'Filemom',chapters:1,testament:'NT',index:56},
+            {abbr:'Hb',name:'Hebreus',chapters:13,testament:'NT',index:57},
+            {abbr:'Tg',name:'Tiago',chapters:5,testament:'NT',index:58},
+            {abbr:'1Pe',name:'1 Pedro',chapters:5,testament:'NT',index:59},
+            {abbr:'2Pe',name:'2 Pedro',chapters:3,testament:'NT',index:60},
+            {abbr:'1Jo',name:'1 João',chapters:5,testament:'NT',index:61},
+            {abbr:'2Jo',name:'2 João',chapters:1,testament:'NT',index:62},
+            {abbr:'3Jo',name:'3 João',chapters:1,testament:'NT',index:63},
+            {abbr:'Jd',name:'Judas',chapters:1,testament:'NT',index:64},
+            {abbr:'Ap',name:'Apocalipse',chapters:22,testament:'NT',index:65}
+        ];
+
+        const readingPlans = {
+            canonical: {
+                id: 'canonical',
+                name: 'Ordem Canônica',
+                desc: 'Gênesis ao Apocalipse em 365 dias',
+                icon: '📖',
+                days: 365,
+                generate: function() {
+                    const readings = [];
+                    let day = 1;
+                    const chaptersPerDay = 4;
+
+                    books.forEach(book => {
+                        for(let ch = 1; ch <= book.chapters; ch++) {
+                            readings.push({
+                                day: Math.min(day, 365),
+                                book: book.abbr,
+                                bookName: book.name,
+                                chapter: ch
+                            });
+                            if(readings.filter(r => r.day === day).length >= chaptersPerDay) {
+                                day++;
+                            }
+                        }
+                    });
+                    return readings;
+                }
+            },
+            nt: {
+                id: 'nt',
+                name: 'Novo Testamento',
+                desc: 'Só o NT em 180 dias',
+                icon: '✝️',
+                days: 180,
+                generate: function() {
+                    const ntBooks = books.filter(b => b.testament === 'NT');
+                    const readings = [];
+                    let day = 1;
+                    const totalChapters = ntBooks.reduce((sum, b) => sum + b.chapters, 0);
+                    const chaptersPerDay = Math.ceil(totalChapters / 180);
+
+                    ntBooks.forEach(book => {
+                        for(let ch = 1; ch <= book.chapters; ch++) {
+                            readings.push({
+                                day: Math.min(day, 180),
+                                book: book.abbr,
+                                bookName: book.name,
+                                chapter: ch
+                            });
+                            if(readings.filter(r => r.day === day).length >= chaptersPerDay) {
+                                day++;
+                            }
+                        }
+                    });
+                    return readings;
+                }
+            },
+            gospels: {
+                id: 'gospels',
+                name: 'Evangelhos',
+                desc: 'Mateus, Marcos, Lucas e João em 90 dias',
+                icon: '🐟',
+                days: 90,
+                generate: function() {
+                    const gospelBooks = books.filter(b => ['Mt','Mc','Lc','Jo'].includes(b.abbr));
+                    const readings = [];
+                    let day = 1;
+                    const totalChapters = gospelBooks.reduce((sum, b) => sum + b.chapters, 0);
+                    const chaptersPerDay = Math.ceil(totalChapters / 90);
+
+                    gospelBooks.forEach(book => {
+                        for(let ch = 1; ch <= book.chapters; ch++) {
+                            readings.push({
+                                day: Math.min(day, 90),
+                                book: book.abbr,
+                                bookName: book.name,
+                                chapter: ch
+                            });
+                            if(readings.filter(r => r.day === day).length >= chaptersPerDay) {
+                                day++;
+                            }
+                        }
+                    });
+                    return readings;
+                }
+            }
+        };
+
+        const App = {
+            bibles: {},
+            currentBook: null,
+            currentChapter: 1,
+            currentVersion: 'ARA',
+            currentPlan: null,
+            planReadings: [],
+            planStartDate: null,
+            progress: {},
+            highlights: {},
+
+            // Controle de scroll para barra inferior
+            scrollState: {
+                isAtBottom: false
+            },
+
+            readerSettings: {
+                theme: 'light',
+                font: 'serif',
+                fontSize: 18,
+                lineHeight: 1.8
+            },
+
+            // Variáveis para swipe
+            swipeState: {
+                startX: 0,
+                startY: 0,
+                currentX: 0,
+                isDragging: false,
+                threshold: 50,
+                isHorizontal: false
+            },
+
+            // Variáveis para marcação múltipla
+            selectionState: {
+                selectedVerses: []
+            },
+
+            // Variável para remoção de marcação
+            highlightToRemove: null,
+
+            init() {
+                console.log('[App] Inicializando...');
+                this.loadData();
+
+                // Inicializa tema do leitor
+                const reader = document.getElementById('reader');
+                if(reader) reader.setAttribute('data-reader-theme', this.readerSettings.theme || 'light');
+
+                // Configura listeners
+                this.setupTextSelectionListener();
+                this.setupSwipeGestures();
+                this.setupScrollListener();
+
+                setTimeout(() => {
+                    const btn = document.getElementById('startBtn');
+                    if(btn) btn.classList.add('visible');
+                }, 1500);
+
+                console.log('[App] Inicialização completa');
+            },
+
+            // Configura listener de scroll para mostrar barra inferior no final
+            setupScrollListener() {
+                const readerContent = document.getElementById('readerContent');
+                if(!readerContent) return;
+
+                readerContent.addEventListener('scroll', () => {
+                    this.checkScrollPosition();
+                });
+            },
+
+            // Verifica se chegou ao final do scroll
+            checkScrollPosition() {
+                const readerContent = document.getElementById('readerContent');
+                const readerActions = document.getElementById('readerActions');
+                if(!readerContent || !readerActions) return;
+
+                const scrollTop = readerContent.scrollTop;
+                const scrollHeight = readerContent.scrollHeight;
+                const clientHeight = readerContent.clientHeight;
+
+                // Considera "no final" quando faltam menos de 50px ou já está no final
+                const isAtBottom = (scrollHeight - scrollTop - clientHeight) < 50;
+
+                if(isAtBottom !== this.scrollState.isAtBottom) {
+                    this.scrollState.isAtBottom = isAtBottom;
+                    if(isAtBottom) {
+                        readerActions.classList.add('visible');
+                    } else {
+                        readerActions.classList.remove('visible');
+                    }
+                }
+            },
+
+            // CORREÇÃO: Configura swipe simplificado
+            setupSwipeGestures() {
+                const container = document.getElementById('readerContainer');
+                if(!container) return;
+
+                // Touch events
+                container.addEventListener('touchstart', (e) => this.handleTouchStart(e), {passive: true});
+                container.addEventListener('touchmove', (e) => this.handleTouchMove(e), {passive: true});
+                container.addEventListener('touchend', (e) => this.handleTouchEnd(e), {passive: true});
+
+                // Mouse events
+                container.addEventListener('mousedown', (e) => this.handleTouchStart(e));
+                container.addEventListener('mousemove', (e) => this.handleTouchMove(e));
+                container.addEventListener('mouseup', (e) => this.handleTouchEnd(e));
+                container.addEventListener('mouseleave', (e) => this.handleTouchEnd(e));
+            },
+
+            handleTouchStart(e) {
+                const touch = e.touches ? e.touches[0] : e;
+                this.swipeState.startX = touch.clientX;
+                this.swipeState.startY = touch.clientY;
+                this.swipeState.currentX = touch.clientX;
+                this.swipeState.isDragging = true;
+                this.swipeState.isHorizontal = false;
+
+                const track = document.getElementById('readerTrack');
+                if(track) track.style.transition = 'none';
+            },
+
+            handleTouchMove(e) {
+                if(!this.swipeState.isDragging) return;
+
+                const touch = e.touches ? e.touches[0] : e;
+                const diffX = touch.clientX - this.swipeState.startX;
+                const diffY = touch.clientY - this.swipeState.startY;
+
+                // Determina se é swipe horizontal ou vertical
+                if(!this.swipeState.isHorizontal && Math.abs(diffX) > 10) {
+                    this.swipeState.isHorizontal = Math.abs(diffX) > Math.abs(diffY);
+                }
+
+                if(this.swipeState.isHorizontal) {
+                    // Apenas anima levemente, não move o conteúdo
+                    const track = document.getElementById('readerTrack');
+                    if(track && Math.abs(diffX) < 100) {
+                        track.style.transform = `translateX(${diffX * 0.3}px)`;
+                    }
+                }
+            },
+
+            handleTouchEnd(e) {
+                if(!this.swipeState.isDragging) return;
+
+                this.swipeState.isDragging = false;
+                const touch = e.changedTouches ? e.changedTouches[0] : e;
+                const diffX = touch.clientX - this.swipeState.startX;
+
+                const track = document.getElementById('readerTrack');
+                if(track) {
+                    track.style.transition = 'transform 0.3s ease-out';
+                    track.style.transform = 'translateX(0)';
+                }
+
+                // Só muda de capítulo se for swipe horizontal significativo
+                if(this.swipeState.isHorizontal && Math.abs(diffX) > this.swipeState.threshold) {
+                    if(diffX > 0) {
+                        this.prevChapter();
+                    } else {
+                        this.nextChapter();
+                    }
+                }
+            },
+
+            // CORREÇÃO: Configura listeners de seleção de texto e cliques
+            setupTextSelectionListener() {
+                const readerContent = document.getElementById('readerContent');
+                if(!readerContent) return;
+
+                // Detectar seleção de texto para abrir painel IMEDIATAMENTE
+                // Usar pointerup para capturar tanto mouse quanto toque
+                readerContent.addEventListener('pointerup', () => {
+                    setTimeout(() => this.checkTextSelection(), 50);
+                });
+
+                // Fallback para mouseup
+                readerContent.addEventListener('mouseup', () => {
+                    setTimeout(() => this.checkTextSelection(), 50);
+                });
+
+                // Fallback para touchend (mobile)
+                readerContent.addEventListener('touchend', () => {
+                    setTimeout(() => this.checkTextSelection(), 50);
+                });
+
+                // Detectar durante seleção (para mobile)
+                document.addEventListener('selectionchange', () => {
+                    if(document.activeElement === readerContent || readerContent.contains(window.getSelection().anchorNode)) {
+                        setTimeout(() => this.checkTextSelection(), 50);
+                    }
+                });
+
+                // Delegação de eventos para cliques em versículos e marcações
+                readerContent.addEventListener('click', (e) => {
+                    // Se clicou em uma marcação, mostra modal de remoção
+                    if(e.target.closest('.highlight')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const highlightEl = e.target.closest('.highlight');
+                        this.showRemoveHighlightModal(highlightEl, e);
+                        return;
+                    }
+
+                    // Se clicou em um versículo, seleciona/deseleciona
+                    const verseEl = e.target.closest('.verse');
+                    if(verseEl && !window.getSelection().toString().trim()) {
+                        const verseNum = verseEl.dataset.verse;
+                        if(this.selectionState.selectedVerses.includes(verseNum)) {
+                            this.selectionState.selectedVerses = this.selectionState.selectedVerses.filter(v => v !== verseNum);
+                            verseEl.classList.remove('selected');
+                        } else {
+                            this.selectionState.selectedVerses.push(verseNum);
+                            verseEl.classList.add('selected');
+                        }
+                    }
+                });
+            },
+
+            // CORREÇÃO: Verifica seleção de texto e abre painel IMEDIATAMENTE
+            checkTextSelection() {
+                const selection = window.getSelection();
+                const text = selection.toString().trim();
+
+                // Só abre se houver texto selecionado E a seleção estiver dentro do reader
+                if(text.length > 0) {
+                    const range = selection.getRangeAt(0);
+                    const readerContent = document.getElementById('readerContent');
+
+                    // Verifica se a seleção está dentro do conteúdo do leitor
+                    if(readerContent && readerContent.contains(range.commonAncestorContainer)) {
+                        this.openHighlightPanel(selection);
+                    }
+                } else {
+                    // Se não há texto selecionado, fecha o painel
+                    this.closeHighlightPanel();
+                }
+            },
+
+            // CORREÇÃO: Mostra modal de remoção de marcação
+            showRemoveHighlightModal(highlightEl, event) {
+                const modal = document.getElementById('removeHighlightModal');
+                if(!modal) return;
+
+                this.highlightToRemove = highlightEl;
+
+                // Posiciona o modal
+                const rect = highlightEl.getBoundingClientRect();
+                modal.style.top = (rect.bottom + 10) + 'px';
+                modal.style.left = rect.left + 'px';
+                modal.classList.add('visible');
+
+                // Fecha ao clicar fora
+                const closeHandler = (e) => {
+                    if(!modal.contains(e.target) && !e.target.closest('.highlight')) {
+                        modal.classList.remove('visible');
+                        document.removeEventListener('click', closeHandler);
+                    }
+                };
+
+                setTimeout(() => {
+                    document.addEventListener('click', closeHandler);
+                }, 100);
+            },
+
+            // CORREÇÃO: Confirma remoção de marcação - garante limpeza completa
+            confirmRemoveHighlight() {
+                if(!this.highlightToRemove) return;
+
+                const verseEl = this.highlightToRemove.closest('.verse');
+                if(!verseEl) {
+                    this.highlightToRemove = null;
+                    const modal = document.getElementById('removeHighlightModal');
+                    if(modal) modal.classList.remove('visible');
+                    return;
+                }
+
+                const verseNum = verseEl.dataset.verse;
+                const key = `${this.currentBook}_${this.currentChapter}`;
+                const textToRemove = this.highlightToRemove.textContent.trim();
+
+                if(this.highlights[key]) {
+                    // Remove do estado - comparação mais flexível (trim e ignora múltiplos espaços)
+                    const beforeCount = this.highlights[key].length;
+                    this.highlights[key] = this.highlights[key].filter(h => {
+                        const verseMatch = h.verse == verseNum;
+                        const textMatch = h.text.trim() === textToRemove;
+                        return !(verseMatch && textMatch);
+                    });
+
+                    if(this.highlights[key].length === 0) {
+                        delete this.highlights[key];
+                    }
+
+                    this.saveData();
+
+                    // Remove o elemento span do DOM de forma segura
+                    try {
+                        const parent = this.highlightToRemove.parentNode;
+                        if(parent) {
+                            // Move todo o conteúdo do span para fora
+                            const fragment = document.createDocumentFragment();
+                            while(this.highlightToRemove.firstChild) {
+                                fragment.appendChild(this.highlightToRemove.firstChild);
+                            }
+                            parent.insertBefore(fragment, this.highlightToRemove);
+                            parent.removeChild(this.highlightToRemove);
+
+                            // Normaliza para juntar nós de texto adjacentes
+                            if(parent.normalize) {
+                                parent.normalize();
+                            }
+                        }
+
+                        const removed = beforeCount - (this.highlights[key]?.length || 0);
+                        if(removed > 0) {
+                            this.showToast('Marcação removida', 'success');
+                        }
+                    } catch(e) {
+                        console.error('[Highlight] Erro ao remover do DOM:', e);
+                        // Se falhar, recarrega o capítulo para sincronizar
+                        this.loadChapter();
+                    }
+                }
+
+                const modal = document.getElementById('removeHighlightModal');
+                if(modal) modal.classList.remove('visible');
+                this.highlightToRemove = null;
+            },
+
+            // NOVA FUNÇÃO: Limpa todas as marcações do capítulo atual
+            clearAllHighlights() {
+                const key = `${this.currentBook}_${this.currentChapter}`;
+
+                if(!this.highlights[key] || this.highlights[key].length === 0) {
+                    this.showToast('Nenhuma marcação para limpar', 'info');
+                    return;
+                }
+
+                const count = this.highlights[key].length;
+
+                // Remove do estado
+                delete this.highlights[key];
+                this.saveData();
+
+                // Recarrega o capítulo para limpar o DOM
+                this.loadChapter();
+
+                this.showToast(`${count} marcação(ões) removida(s)`, 'success');
+            },
+
+            // CORREÇÃO: Abre painel de marcação ABAIXO do texto selecionado
+            openHighlightPanel(selection) {
+                const panel = document.getElementById('highlightPanel');
+                if(!panel) return;
+
+                try {
+                    const range = selection.getRangeAt(0);
+                    const rect = range.getBoundingClientRect();
+
+                    if(rect.width === 0 && rect.height === 0) return;
+
+                    // SEMPRE posiciona ABAIXO do texto selecionado
+                    const panelHeight = 100;
+                    const panelWidth = 220;
+
+                    // Posiciona abaixo do texto (rect.bottom + margem)
+                    let top = rect.bottom + 10;
+
+                    // Se não couber embaixo (próximo do final da tela), coloca acima
+                    if(top + panelHeight > window.innerHeight - 20) {
+                        top = rect.top - panelHeight - 10;
+                    }
+
+                    // Centraliza horizontalmente em relação à seleção
+                    let left = rect.left + (rect.width / 2) - (panelWidth / 2);
+                    // Garante que não saia da tela
+                    left = Math.max(10, Math.min(left, window.innerWidth - panelWidth - 10));
+
+                    panel.style.top = top + 'px';
+                    panel.style.left = left + 'px';
+                    panel.classList.add('visible');
+                } catch(e) {
+                    console.error('[Highlight] Erro:', e);
+                }
+            },
+
+            loadData() {
+                try {
+                    this.currentPlan = localStorage.getItem('b365_plan');
+                    this.planStartDate = localStorage.getItem('b365_start');
+                    this.progress = JSON.parse(localStorage.getItem('b365_progress') || '{}');
+                    this.highlights = JSON.parse(localStorage.getItem('b365_highlights') || '{}');
+                    this.currentVersion = localStorage.getItem('b365_version') || 'ARA';
+                    this.readerSettings = JSON.parse(localStorage.getItem('b365_reader') || '{}');
+
+                    const versionSelect = document.getElementById('versionSelect');
+                    if(versionSelect) versionSelect.value = this.currentVersion;
+
+                    if(this.readerSettings.fontSize) {
+                        document.documentElement.style.setProperty('--font-size', this.readerSettings.fontSize + 'px');
+                    }
+                    if(this.readerSettings.lineHeight) {
+                        document.documentElement.style.setProperty('--line-height', this.readerSettings.lineHeight);
+                    }
+                } catch(e) {
+                    console.error('[App] Erro ao carregar dados:', e);
+                }
+            },
+
+            saveData() {
+                try {
+                    localStorage.setItem('b365_plan', this.currentPlan || '');
+                    localStorage.setItem('b365_start', this.planStartDate || '');
+                    localStorage.setItem('b365_progress', JSON.stringify(this.progress));
+                    localStorage.setItem('b365_highlights', JSON.stringify(this.highlights));
+                    localStorage.setItem('b365_version', this.currentVersion);
+                    localStorage.setItem('b365_reader', JSON.stringify(this.readerSettings));
+                } catch(e) {
+                    console.error('[App] Erro ao salvar dados:', e);
+                }
+            },
+
+            start() {
+                const splash = document.getElementById('splash');
+                const app = document.getElementById('app');
+
+                if(splash) splash.classList.add('hidden');
+                if(app) app.classList.add('visible');
+
+                this.renderBooks();
+                this.updateHomeTab();
+            },
+
+            switchTab(tab, btn) {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+                if(btn) btn.classList.add('active');
+                const panel = document.getElementById(tab + 'Panel');
+                if(panel) panel.classList.add('active');
+
+                if(tab === 'books') this.renderBooks();
+                if(tab === 'plans') this.renderPlans();
+                if(tab === 'progress') this.renderProgress();
+            },
+
+            updateHomeTab() {
+                const readCount = Object.keys(this.progress).length;
+                const totalReadEl = document.getElementById('totalRead');
+                if(totalReadEl) totalReadEl.textContent = readCount;
+
+                const streak = this.calculateStreak();
+                const streakEl = document.getElementById('streakDays');
+                if(streakEl) streakEl.textContent = streak;
+
+                const todayCard = document.getElementById('todayReadingCard');
+                const noPlanCard = document.getElementById('noPlanCard');
+
+                if(this.currentPlan && readingPlans[this.currentPlan]) {
+                    if(noPlanCard) noPlanCard.style.display = 'none';
+                    if(todayCard) todayCard.style.display = 'block';
+
+                    const plan = readingPlans[this.currentPlan];
+                    if(!this.planReadings.length) {
+                        this.planReadings = plan.generate();
+                    }
+
+                    const start = new Date(this.planStartDate || new Date());
+                    const today = new Date();
+                    const dayDiff = Math.floor((today - start) / (1000 * 60 * 60 * 24)) + 1;
+                    const currentDay = Math.max(1, Math.min(dayDiff, plan.days));
+
+                    const progress = Math.round((currentDay / plan.days) * 100);
+                    const planProgressEl = document.getElementById('planProgress');
+                    if(planProgressEl) planProgressEl.textContent = progress + '%';
+
+                    const todayReadings = this.planReadings.filter(r => r.day === currentDay);
+                    const content = document.getElementById('todayReadingContent');
+
+                    if(content) {
+                        if(todayReadings.length > 0) {
+                            content.innerHTML = todayReadings.map(r => `
+                                <div class="reading-item">
+                                    <strong>${r.bookName}</strong> ${r.chapter}
+                                </div>
+                            `).join('');
+                        } else {
+                            content.innerHTML = '<p class="loading-text">Plano concluído! 🎉</p>';
+                        }
+                    }
+                } else {
+                    if(noPlanCard) noPlanCard.style.display = 'block';
+                    if(todayCard) todayCard.style.display = 'none';
+                    const planProgressEl = document.getElementById('planProgress');
+                    if(planProgressEl) planProgressEl.textContent = '0%';
+                }
+            },
+
+            calculateStreak() {
+                const dates = Object.values(this.progress)
+                    .map(p => new Date(p.date).toDateString())
+                    .filter((v, i, a) => a.indexOf(v) === i)
+                    .sort((a, b) => new Date(b) - new Date(a));
+
+                if(!dates.length) return 0;
+
+                let streak = 0;
+                const today = new Date().toDateString();
+                const yesterday = new Date(Date.now() - 86400000).toDateString();
+
+                if(dates[0] === today || dates[0] === yesterday) {
+                    streak = 1;
+                    for(let i = 1; i < dates.length; i++) {
+                        const prev = new Date(dates[i-1]);
+                        const curr = new Date(dates[i]);
+                        const diff = (prev - curr) / (1000 * 60 * 60 * 24);
+                        if(diff === 1) streak++;
+                        else break;
+                    }
+                }
+                return streak;
+            },
+
+            readToday() {
+                if(!this.currentPlan) return;
+
+                const start = new Date(this.planStartDate || new Date());
+                const today = new Date();
+                const dayDiff = Math.floor((today - start) / (1000 * 60 * 60 * 24)) + 1;
+                const currentDay = Math.max(1, dayDiff);
+
+                const todayReadings = this.planReadings.filter(r => r.day === currentDay);
+                if(todayReadings.length > 0) {
+                    this.openChapter(todayReadings[0].book, todayReadings[0].chapter);
+                }
+            },
+
+            renderBooks() {
+                const grid = document.getElementById('booksGrid');
+                if(!grid) return;
+
+                grid.innerHTML = books.map(b => `
+                    <div class="book-card" data-book="${b.abbr}" data-testament="${b.testament}" onclick="App.selectBook('${b.abbr}')">
+                        <div class="book-abbr">${b.abbr}</div>
+                        <div class="book-name">${b.name}</div>
+                    </div>
+                `).join('');
+            },
+
+            searchBooks(query) {
+                const cards = document.querySelectorAll('.book-card');
+                const q = query.toLowerCase();
+                cards.forEach(c => {
+                    const book = books.find(b => b.abbr === c.dataset.book);
+                    const match = book && (book.name.toLowerCase().includes(q) || book.abbr.toLowerCase().includes(q));
+                    c.style.display = match ? 'block' : 'none';
+                });
+            },
+
+            filterTestament(t, btn) {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                if(btn) btn.classList.add('active');
+
+                document.querySelectorAll('.book-card').forEach(c => {
+                    c.style.display = (t === 'all' || c.dataset.testament === t) ? 'block' : 'none';
+                });
+            },
+
+            selectBook(abbr) {
+                const book = books.find(b => b.abbr === abbr);
+                if(!book) return;
+
+                const modalTitle = document.getElementById('modalTitle');
+                if(modalTitle) modalTitle.textContent = book.name + ' - Capítulos';
+
+                const grid = document.getElementById('chapterGrid');
+                if(grid) {
+                    grid.innerHTML = Array.from({length: book.chapters}, (_, i) => {
+                        const ch = i + 1;
+                        const read = this.progress[`${abbr}_${ch}`];
+                        return `<button class="chapter-btn ${read ? 'read' : ''}" onclick="App.openChapter('${abbr}', ${ch})">${ch}</button>`;
+                    }).join('');
+                }
+
+                const modal = document.getElementById('chapterModal');
+                if(modal) modal.classList.add('active');
+            },
+
+            openChapter(book, chapter) {
+                this.currentBook = book;
+                this.currentChapter = chapter;
+                this.closeChapterModal();
+                this.loadChapter();
+            },
+
+            closeChapterModal() {
+                const modal = document.getElementById('chapterModal');
+                if(modal) modal.classList.remove('active');
+            },
+
+            async loadChapter() {
+                const book = books.find(b => b.abbr === this.currentBook);
+                if(!book) return;
+
+                if(!this.bibles[this.currentVersion]) {
+                    try {
+                        this.showToast('Carregando Bíblia...', 'info');
+                        const response = await fetch(`bibles/${this.currentVersion}.json`);
+                        if(!response.ok) throw new Error('Arquivo não encontrado');
+                        this.bibles[this.currentVersion] = await response.json();
+                    } catch(e) {
+                        this.showToast(`Erro: Coloque o arquivo ${this.currentVersion}.json na pasta bibles/`, 'error');
+                        return;
+                    }
+                }
+
+                const bible = this.bibles[this.currentVersion];
+                const bookData = bible[book.index];
+
+                if(!bookData || !bookData.chapters[this.currentChapter - 1]) {
+                    this.showToast('Capítulo não encontrado', 'error');
+                    return;
+                }
+
+                const chapterData = bookData.chapters[this.currentChapter - 1];
+                const verses = Array.isArray(chapterData) 
+                    ? chapterData.map((v, i) => ({n: i+1, t: v}))
+                    : Object.entries(chapterData).map(([n, t]) => ({n, t}));
+
+                const key = `${this.currentBook}_${this.currentChapter}`;
+                const chapterHighlights = this.highlights[key] || [];
+
+                const readerBook = document.getElementById('readerBook');
+                const readerChapter = document.getElementById('readerChapter');
+                if(readerBook) readerBook.textContent = book.name;
+                if(readerChapter) readerChapter.textContent = 'Capítulo ' + this.currentChapter;
+
+                const readerContent = document.getElementById('readerContent');
+                if(readerContent) {
+                    readerContent.innerHTML = verses.map(v => {
+                        let text = v.t;
+
+                        // Aplica marcações salvas - suporta marcação parcial
+                        const verseHighlights = chapterHighlights.filter(h => h.verse == v.n);
+
+                        if(verseHighlights.length > 0) {
+                            // Ordena por comprimento do texto (maior primeiro) para evitar conflitos
+                            verseHighlights.sort((a, b) => b.text.length - a.text.length);
+
+                            verseHighlights.forEach(h => {
+                                // Escapa caracteres especiais para regex
+                                const escapedText = h.text.replace(/[.*+?^${}()|[\]\\]/g, '\$&');
+                                const regex = new RegExp(`(${escapedText})`, 'g');
+
+                                // Substitui todas as ocorrências (mas deve ser única por versículo)
+                                text = text.replace(regex, `<span class="highlight ${h.color}" data-highlight="true">$1</span>`);
+                            });
+                        }
+
+                        return `
+                            <div class="verse" data-verse="${v.n}">
+                                <span class="verse-num">${v.n}</span>
+                                <span class="verse-text">${text}</span>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                const reader = document.getElementById('reader');
+                if(reader) reader.classList.add('visible');
+
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                if(prevBtn) prevBtn.disabled = this.currentChapter <= 1;
+                if(nextBtn) nextBtn.disabled = this.currentChapter >= book.chapters;
+
+                // Limpa seleção de versículos
+                this.selectionState.selectedVerses = [];
+            },
+
+            changeVersion(v) {
+                this.currentVersion = v;
+                this.saveData();
+                this.loadChapter();
+            },
+
+            prevChapter() {
+                if(this.currentChapter > 1) {
+                    this.currentChapter--;
+                    this.loadChapter();
+                }
+            },
+
+            nextChapter() {
+                const book = books.find(b => b.abbr === this.currentBook);
+                if(book && this.currentChapter < book.chapters) {
+                    this.currentChapter++;
+                    this.loadChapter();
+                }
+            },
+
+            closeReader() {
+                const reader = document.getElementById('reader');
+                if(reader) reader.classList.remove('visible');
+                this.closeSettings();
+                this.closeHighlightPanel();
+                this.selectionState.selectedVerses = [];
+            },
+
+            markAsRead() {
+                this.progress[`${this.currentBook}_${this.currentChapter}`] = {
+                    date: new Date().toISOString()
+                };
+                this.saveData();
+                this.showToast('✓ Marcado como lido!', 'success');
+                this.updateHomeTab();
+            },
+
+            openSettings() {
+                const panel = document.getElementById('settingsPanel');
+                if(panel) panel.classList.add('visible');
+                this.closeHighlightPanel();
+            },
+
+            closeSettings() {
+                const panel = document.getElementById('settingsPanel');
+                if(panel) panel.classList.remove('visible');
+            },
+
+            setReaderTheme(theme, btn) {
+                const reader = document.getElementById('reader');
+                if(reader) reader.setAttribute('data-reader-theme', theme);
+                this.readerSettings.theme = theme;
+                this.saveData();
+
+                document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                if(btn) btn.classList.add('active');
+            },
+
+            setFont(font, btn) {
+                const fonts = {
+                    serif: "'Georgia', 'Times New Roman', serif",
+                    sans: "'Segoe UI', 'Roboto', sans-serif",
+                    mono: "'Consolas', 'Monaco', monospace"
+                };
+                document.documentElement.style.setProperty('--font-family', fonts[font]);
+                this.readerSettings.font = font;
+                this.saveData();
+
+                document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active'));
+                if(btn) btn.classList.add('active');
+            },
+
+            setFontSize(size) {
+                document.documentElement.style.setProperty('--font-size', size + 'px');
+                const fontSizeValue = document.getElementById('fontSizeValue');
+                if(fontSizeValue) fontSizeValue.textContent = size + 'px';
+                this.readerSettings.fontSize = size;
+                this.saveData();
+            },
+
+            setLineHeight(height) {
+                document.documentElement.style.setProperty('--line-height', height);
+                const lineHeightValue = document.getElementById('lineHeightValue');
+                if(lineHeightValue) lineHeightValue.textContent = height;
+                this.readerSettings.lineHeight = height;
+                this.saveData();
+            },
+
+            openHighlight() {
+                const selection = window.getSelection();
+                if(selection.toString().trim().length > 0) {
+                    this.openHighlightPanel(selection);
+                } else {
+                    this.showToast('Selecione um texto primeiro', 'warning');
+                }
+            },
+
+            closeHighlightPanel() {
+                const panel = document.getElementById('highlightPanel');
+                if(panel) panel.classList.remove('visible');
+            },
+
+            highlightSelection(color) {
+                try {
+                    const selection = window.getSelection();
+                    const selectedText = selection.toString().trim();
+                    if(!selectedText) {
+                        this.showToast('Nenhum texto selecionado', 'warning');
+                        return;
+                    }
+
+                    const range = selection.getRangeAt(0);
+                    const readerContent = document.getElementById('readerContent');
+
+                    if(!readerContent || !readerContent.contains(range.commonAncestorContainer)) {
+                        this.showToast('Selecione texto dentro do leitor', 'warning');
+                        return;
+                    }
+
+                    // Encontra o elemento .verse mais próximo
+                    let container = range.commonAncestorContainer;
+                    if(container.nodeType === Node.TEXT_NODE) {
+                        container = container.parentElement;
+                    }
+
+                    let verseEl = container.closest('.verse');
+                    if(!verseEl) {
+                        // Tenta encontrar buscando ancestral
+                        let el = container;
+                        while(el && el !== readerContent) {
+                            if(el.classList && el.classList.contains('verse')) {
+                                verseEl = el;
+                                break;
+                            }
+                            el = el.parentElement;
+                        }
+                    }
+
+                    if(!verseEl) {
+                        this.showToast('Selecione texto dentro de um versículo', 'warning');
+                        return;
+                    }
+
+                    const verseNum = verseEl.dataset.verse;
+                    const verseTextEl = verseEl.querySelector('.verse-text');
+                    if(!verseTextEl) return;
+
+                    // Cria um novo range limitado ao verse-text
+                    const verseRange = document.createRange();
+
+                    // Determina os limites do range dentro do versículo
+                    let startNode = range.startContainer;
+                    let startOffset = range.startOffset;
+                    let endNode = range.endContainer;
+                    let endOffset = range.endOffset;
+
+                    // Ajusta se necessário para ficar dentro do verse-text
+                    if(!verseTextEl.contains(startNode)) {
+                        startNode = verseTextEl.firstChild;
+                        startOffset = 0;
+                    }
+                    if(!verseTextEl.contains(endNode)) {
+                        endNode = verseTextEl.lastChild;
+                        endOffset = endNode.length;
+                    }
+
+                    verseRange.setStart(startNode, startOffset);
+                    verseRange.setEnd(endNode, endOffset);
+
+                    // Extrai e marca
+                    const contents = verseRange.extractContents();
+                    if(!contents.textContent.trim()) {
+                        this.showToast('Texto vazio não pode ser marcado', 'warning');
+                        return;
+                    }
+
+                    const span = document.createElement('span');
+                    span.className = 'highlight ' + color;
+                    span.appendChild(contents);
+
+                    verseRange.insertNode(span);
+
+                    // Salva
+                    const key = this.currentBook + '_' + this.currentChapter;
+                    if(!this.highlights[key]) this.highlights[key] = [];
+
+                    this.highlights[key].push({
+                        verse: verseNum,
+                        text: span.textContent,
+                        color: color,
+                        date: new Date().toISOString()
+                    });
+
+                    this.saveData();
+                    this.closeHighlightPanel();
+                    selection.removeAllRanges();
+
+                    this.showToast('Texto marcado!', 'success');
+
+                } catch(err) {
+                    console.error('[Highlight] Erro:', err);
+                    this.showToast('Erro ao marcar texto', 'error');
+                }
+            },
+
+            renderPlans() {
+                const container = document.getElementById('plansList');
+                if(!container) return;
+
+                container.innerHTML = Object.values(readingPlans).map(plan => {
+                    const isActive = this.currentPlan === plan.id;
+                    let progress = 0;
+
+                    if(isActive && this.planReadings.length) {
+                        const start = new Date(this.planStartDate || new Date());
+                        const today = new Date();
+                        const dayDiff = Math.floor((today - start) / (1000 * 60 * 60 * 24)) + 1;
+                        progress = Math.min(100, Math.round((dayDiff / plan.days) * 100));
+                    }
+
+                    return `
+                        <div class="plan-card ${isActive ? 'active' : ''}" onclick="App.selectPlan('${plan.id}')">
+                            <div class="plan-icon">${plan.icon}</div>
+                            <div class="plan-name">${plan.name}</div>
+                            <div class="plan-desc">${plan.desc}</div>
+                            <span class="plan-badge">${plan.days} dias</span>
+                            ${isActive ? '<span class="plan-badge" style="margin-left: 10px;">✓ Ativo</span>' : ''}
+                            ${isActive ? `
+                                <div class="plan-progress">
+                                    <div class="plan-progress-bar" style="width: ${progress}%"></div>
+                                </div>
+                                <div class="plan-stats">
+                                    <span>Progresso: ${progress}%</span>
+                                    <span>Início: ${this.planStartDate ? new Date(this.planStartDate).toLocaleDateString() : 'Hoje'}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            selectPlan(id) {
+                if(this.currentPlan === id) return;
+
+                this.currentPlan = id;
+                this.planStartDate = new Date().toISOString();
+                this.planReadings = readingPlans[id].generate();
+                this.saveData();
+
+                this.renderPlans();
+                this.updateHomeTab();
+                this.showToast(`Plano "${readingPlans[id].name}" ativado!`, 'success');
+            },
+
+            renderProgress() {
+                const read = Object.keys(this.progress).length;
+                const plan = this.currentPlan ? readingPlans[this.currentPlan] : null;
+
+                const progressDetails = document.getElementById('progressDetails');
+                if(!progressDetails) return;
+
+                progressDetails.innerHTML = `
+                    <div style="font-size: 48px; margin-bottom: 10px;">${read}</div>
+                    <div style="color: #666; margin-bottom: 20px;">capítulos lidos</div>
+                    ${plan ? `
+                        <div style="background: #f0f0f0; height: 20px; border-radius: 10px; overflow: hidden; margin-bottom: 10px;">
+                            <div style="background: linear-gradient(90deg, var(--primary), var(--secondary)); height: 100%; width: ${Math.min(100, Math.round((read/plan.days)*100))}%"></div>
+                        </div>
+                        <div style="color: #666; font-size: 14px;">
+                            Plano: ${plan.name}<br>
+                            Meta: ${plan.days} capítulos
+                        </div>
+                    ` : '<div style="color: #999; margin-top: 20px;">Selecione um plano para acompanhar seu progresso</div>'}
+                `;
+            },
+
+            toggleTheme() {
+                const current = document.body.dataset.theme;
+                const themes = ['light', 'dark', 'sepia', 'night'];
+                const next = themes[(themes.indexOf(current) + 1) % themes.length] || 'dark';
+                document.body.dataset.theme = next;
+            },
+
+            showToast(msg, type) {
+                const t = document.createElement('div');
+                t.className = 'toast ' + type;
+                t.textContent = msg;
+                document.body.appendChild(t);
+                setTimeout(() => t.remove(), 3000);
+            }
+        };
+
+        if(document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => App.init());
+        } else {
+            App.init();
+        }
+    </script>
+</body>
+</html>
